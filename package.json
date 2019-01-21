@@ -1,0 +1,76 @@
+{
+  "name": "auto-barrel",
+  "displayName": "Auto Barrel",
+  "description": "Provides command to create a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
+  "version": "0.0.1",
+  "publisher": "testpossessed",
+  "repository": "https://github.com/testpossessed/auto-barrel",
+  "engines": {
+    "vscode": "^1.30.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:autoBarrel.createBarrel",
+    "onCommand:autoBarrel.start"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Auto Barrel",
+      "properties": {
+        "autoBarrel.defaultLanguageExtension": {
+          "type": "string",
+          "default": "ts",
+          "description": "The default extension to use for barrel file when it cannot be determined from the contents of the folder",
+          "enum": ["ts", "js"],
+          "enumDescriptions": ["Create a TypeScript barrel", "Create a JavaScript barrel"]
+        },
+        "autoBarrel.alwaysUseDefaultLanguageExtension": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether to use the default language extension, ignoring the contents of the folder"
+        },
+        "autoBarrel.watchGlob": {
+          "type": "string",
+          "default": "**/src/**/*.[tj]s",
+          "description": "Glob pattern for files to be watched when auto barrel is started"
+        }
+      }
+    },
+    "commands": [{
+        "command": "autoBarrel.createBarrel",
+        "title": "Create Barrel"
+      },
+      {
+        "command": "autoBarrel.start",
+        "title": "Auto Barrel - Start"
+      }
+    ],
+    "menus": {
+      "commandPalette": [{
+        "command": "autoBarrel.start"
+      }],
+      "explorer/context": [{
+        "command": "autoBarrel.createBarrel",
+        "when": "explorerViewletFocus && explorerResourceIsFolder"
+      }]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run compile && node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "typescript": "^3.1.4",
+    "vscode": "^1.1.25",
+    "tslint": "^5.8.0",
+    "@types/node": "^8.10.25",
+    "@types/mocha": "^2.2.42"
+  }
+}
