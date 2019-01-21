@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import { CreateBarrelCommandHandler } from "./create-barrel-command-handler";
-import { StartCommandHandler } from './start-command-handler';
+import { StartCommandHandler } from "./start-command-handler";
 
 let fileSystemWatcher: vscode.FileSystemWatcher;
 
@@ -18,14 +18,24 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace
           .getConfiguration("autoBarrel")
           .get<string>("watchGlob") || "**/src/**/*.[tj]s";
-      fileSystemWatcher = vscode.workspace.createFileSystemWatcher(watchGlob, false, true, false);
+      fileSystemWatcher = vscode.workspace.createFileSystemWatcher(
+        watchGlob,
+        false,
+        true,
+        false
+      );
       fileSystemWatcher.onDidCreate(StartCommandHandler.handleFileAdded);
       fileSystemWatcher.onDidDelete(StartCommandHandler.handleFileDeleted);
     }
   );
 
+  const stopCommand = vscode.commands.registerCommand("autoBarrel.stop", () => {
+    fileSystemWatcher.dispose();
+  });
+
   context.subscriptions.push(createBarrelCommand);
   context.subscriptions.push(startCommand);
+  context.subscriptions.push(stopCommand);
 }
 
 export function deactivate() {

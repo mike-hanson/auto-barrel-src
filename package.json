@@ -13,7 +13,8 @@
   ],
   "activationEvents": [
     "onCommand:autoBarrel.createBarrel",
-    "onCommand:autoBarrel.start"
+    "onCommand:autoBarrel.start",
+    "onCommand:autoBarrel.stop"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -47,12 +48,20 @@
       {
         "command": "autoBarrel.start",
         "title": "Auto Barrel - Start"
+      },
+      {
+        "command": "autoBarrel.stop",
+        "title": "Auto Barrel - Stop"
       }
     ],
     "menus": {
       "commandPalette": [{
-        "command": "autoBarrel.start"
-      }],
+          "command": "autoBarrel.start"
+        },
+        {
+          "command": "autoBarrel.stop"
+        }
+      ],
       "explorer/context": [{
         "command": "autoBarrel.createBarrel",
         "when": "explorerViewletFocus && explorerResourceIsFolder"
