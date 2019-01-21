@@ -21,6 +21,12 @@ export class StartCommandHandler {
         const exportStatement = `export * from './${fileNameWithoutExtension}';\n`;
 
         const document = await vscode.workspace.openTextDocument(barrelFileUri);
+        if (document.lineCount >= 1) {
+          if (document.lineAt(0).text.indexOf("auto-barrel-ignore") !== -1) {
+            resolve();
+            return;
+          }
+        }
         const newLinePosition = document.lineCount + 1;
 
         const workspaceEdit = new vscode.WorkspaceEdit();
