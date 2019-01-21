@@ -20,30 +20,28 @@ export class StartCommandHandler {
         );
         const exportStatement = `export * from './${fileNameWithoutExtension}';\n`;
 
-        const barrelEditor = await vscode.window.showTextDocument(
-          barrelFileUri
-        );
-        const newLinePosition = barrelEditor.document.lineCount + 1;
+        const document = await vscode.workspace.openTextDocument(barrelFileUri);
+        const newLinePosition = document.lineCount + 1;
 
-        const result = await barrelEditor.edit(b => {
-          b.insert(new vscode.Position(newLinePosition, 0), exportStatement);
-        });
+        const workspaceEdit = new vscode.WorkspaceEdit();
+        workspaceEdit.insert(
+          barrelFileUri,
+          new vscode.Position(newLinePosition, 0),
+          exportStatement
+        );
+        const result = await vscode.workspace.applyEdit(workspaceEdit);
 
         if (result) {
-          if (barrelEditor.document.isDirty) {
-            await barrelEditor.document.save();
-          }
-          await vscode.commands.executeCommand(
-            "workbench.action.closeActiveEditor"
-          );
           vscode.window.showInformationMessage(
-            `The new file ${fileName} was added to the barrel`
+            `The new file ${fileName} was added to the barrel index${extension}`,
+            { modal: false }
           );
 
           resolve();
         } else {
           vscode.window.showWarningMessage(
-            `Unable to add file ${fileName} to barrel in same folder`
+            `Unable to add file ${fileName} to barrel index${extension}`,
+            { modal: false }
           );
 
           reject();
@@ -69,13 +67,11 @@ export class StartCommandHandler {
         );
         const exportTarget = `./${fileNameWithoutExtension}`;
 
-        const barrelEditor = await vscode.window.showTextDocument(
-          barrelFileUri
-        );
+        const document = await vscode.workspace.openTextDocument(barrelFileUri);
 
         let existingLineRange: vscode.Range | undefined = undefined;
-        for (let index = 0; index < barrelEditor.document.lineCount; index++) {
-          const line = barrelEditor.document.lineAt(index);
+        for (let index = 0; index < document.lineCount; index++) {
+          const line = document.lineAt(index);
           if (line.text.indexOf(exportTarget) !== -1) {
             existingLineRange = line.rangeIncludingLineBreak;
             break;
@@ -83,25 +79,19 @@ export class StartCommandHandler {
         }
 
         if (typeof existingLineRange !== undefined) {
-          const result = await barrelEditor.edit(b => {
-            b.delete(<vscode.Range>existingLineRange);
-          });
+          const workspaceEdit = new vscode.WorkspaceEdit();
+          workspaceEdit.delete(barrelFileUri, <vscode.Range>existingLineRange);
+          const result = await vscode.workspace.applyEdit(workspaceEdit);
 
           if (result) {
-            if (barrelEditor.document.isDirty) {
-              await barrelEditor.document.save();
-            }
-            await vscode.commands.executeCommand(
-              "workbench.action.closeActiveEditor"
-            );
             vscode.window.showInformationMessage(
-              `The file import for ${fileName} was removed from the barrel`
+              `The file import for ${fileName} was removed from the barrel index${extension}`
             );
 
             resolve();
           } else {
             vscode.window.showWarningMessage(
-              `Unable to remove import for ${fileName} from barrel in same folder`
+              `Unable to remove import for ${fileName} from the barrel index${extension} in the same folder`
             );
 
             reject();
