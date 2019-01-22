@@ -1,65 +1,60 @@
-# aut-barrel README
+# Auto Barrel
 
-This is the README for your extension "aut-barrel". After writing up a brief description, we recommend including the following sections.
+Auto Barrel adds support for creating a barrel (index.[tj]s) in a folder and optionally keeping it up to date automatically.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Create Barrel - Right click on any folder in Explorer viewlet and this command allows you to create a new barrel with export statements for all other files of the same language.
 
-For example if there is an image subfolder under your extension project workspace:
+Auto Barrel - Start - From the command pallete execute this command to have Auto Barrel automatically add and delete export statements as files are added or deleted from the folder.
 
-\!\[feature X\]\(images/feature-x.png\)
+Auto Barrel - Stop - From the command pallete execute this command to stop automatic management of barrel files.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+You can also prevent Auto Barrel from treating existing index.[tj]s files as barrels by adding a comment to the file
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+The following settings can be configured to control the behaviour of Auto Barrel.
 
-For example:
+#### autoBarrel.defaultLanguageExtension
 
-This extension contributes the following settings:
+This defaults to TypeScript (ts). Supported values are ts or js. When Create Barrel is executed Auto Barrel attempts to determine the language extension from the contents of the folder. If all of the files in the folder have the same extension it will create a barrel file with that extension. If the file contains both .ts and .js files Create Barrel will use this setting.
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+#### autoBarrel.alwaysUseDefaultLanguageExtension
 
-## Known Issues
+This defaults to false. If this is set to true then the Create Barrel command will not attempt to determine the language extension it will create a barrel file with the extension set in autoBarrel.defaultLanguageExtension.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+#### autoBarrel.watchGlob
 
-## Release Notes
+This defaults to _\*\*\/src\/\*\*\/\*.[tj]s_. When the Auto Barrel - Start command is executed from the Command Pallette this setting is used to configure a File System Watcher to monitor file creation and deletion using this setting. Since the most common convention is to put source files in a src folder below a workspace root Auto Barrel uses a default that will watch for creation or deletion of .ts and .js files in any folder below any src folder. If you use a different convention or want to limit to either .ts or .js files you can change the glob.
 
-Users appreciate release notes as you update your extension.
+For example to ignore .js files change it to _\*\*\/src\/\*\*\/_.ts* or to ignore .ts files change it to *\*\*\/src\/\*\*\/_.ts_
 
-### 1.0.0
+## Ignoring Potential Barrel Files
 
-Initial release of ...
+If your workspace/s contain existing index.ts or index.js files that are matched by the autoBarrel.watchGlob pattern, but they are not barrel files you can tell Auto Barrel to ignore them during automatic monitoring by adding the following comment as the first line of the file.
 
-### 1.0.1
+```javascript
+// auto-barrel-ignore
+```
 
-Fixed issue #.
+If Auto Barrel detects a file creation in a folder containing a potential barrel file and the barrel file contains this comment as the first line it will abort processing and make no further attempt to add an export for the new file.
 
-### 1.1.0
+## Automating Start
 
-Added features X, Y, and Z.
+If you would like to have Auto Barrel start monitoring for changes when you open a workspace we recommend the excellent [Auto Run Command](https://marketplace.visualstudio.com/items?itemName=gabrielgrinberg.auto-run-command#overview) extension. With the extension installed simply add a rule something like this to User Settings
 
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+```javascript
+"auto-run-command.rules": [
+    ...
+     {
+         "condition": [
+             "always"
+         ]
+         "command": "autoBarrel.start",
+         "message": "Starting Auto Barrel..."
+     }
+ ]
+```
 
 **Enjoy!**

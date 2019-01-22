@@ -1,10 +1,11 @@
 {
   "name": "auto-barrel",
   "displayName": "Auto Barrel",
-  "description": "Provides command to create a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
+  "description": "Provides a command to create a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
   "version": "0.0.1",
-  "publisher": "testpossessed",
+  "publisher": "mikehanson",
   "repository": "https://github.com/testpossessed/auto-barrel",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.30.0"
   },
