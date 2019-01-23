@@ -8,6 +8,12 @@ export class StartCommandHandler {
       const fileName = path.basename(uri.fsPath);
       const extension = path.extname(uri.fsPath);
       const fileNameWithoutExtension = path.basename(uri.fsPath, extension);
+
+      if (fileNameWithoutExtension.toLowerCase() === "index") {
+        resolve();
+        return;
+      }
+
       const barrelFiles = await vscode.workspace.findFiles(
         new vscode.RelativePattern(folderPath, `index${extension}`)
       );

@@ -2,6 +2,8 @@
 
 Auto Barrel adds support for creating a barrel (index.[tj]s) in a folder and optionally keeping it up to date automatically.
 
+![install and work](images/auto-barrel.gif)
+
 ## Features
 
 Create Barrel - Right click on any folder in Explorer viewlet and this command allows you to create a new barrel with export statements for all other files of the same language.
@@ -58,3 +60,16 @@ If you would like to have Auto Barrel start monitoring for changes when you open
 ```
 
 **Enjoy!**
+
+## Releases
+
+### v1.0.0
+
+Initial release
+
+### v1.0.1
+
+Fixes an issue where an export for the barrel file was added to itself if it was created after the start command was executed
+Fixes an issue where the stop command would generate an error if the extension had not been started
+Added feedback for start command when it is executed and the extension is already started
+Added feedback for stop command when it is executed and the extension is not started
