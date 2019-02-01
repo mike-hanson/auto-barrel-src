@@ -21,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
       const watchGlob =
         vscode.workspace
           .getConfiguration("autoBarrel")
-          .get<string>("watchGlob") || "**/src/**/*.[tj]s";
+          .get<string>("watchGlob") || "**/src/**/*!(.spec).[tj]s";
       fileSystemWatcher = vscode.workspace.createFileSystemWatcher(
         watchGlob,
         false,
