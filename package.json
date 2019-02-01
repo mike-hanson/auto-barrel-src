@@ -2,7 +2,7 @@
   "name": "auto-barrel",
   "displayName": "Auto Barrel",
   "description": "Provides a command to create a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "mikehanson",
   "repository": "https://github.com/testpossessed/auto-barrel",
   "icon": "images/icon.png",
@@ -37,8 +37,13 @@
         },
         "autoBarrel.watchGlob": {
           "type": "string",
-          "default": "**/src/**/*!(.spec).[tj]s",
+          "default": "**/src/**/*.[tj]s",
           "description": "Glob pattern for files to be watched when auto barrel is started"
+        },
+        "autoBarrel.ignoreFilePathContainingAnyOf": {
+          "type": "string",
+          "default": ".spec,.test",
+          "description": "Comman separated list of file path fragments that should be ignored"
         }
       }
     },

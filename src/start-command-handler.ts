@@ -1,5 +1,7 @@
-import * as vscode from "vscode";
-import * as path from "path";
+import * as vscode from 'vscode';
+import * as path from 'path';
+
+import { Helper } from './helper';
 
 export class StartCommandHandler {
   public static async handleFileAdded(uri: vscode.Uri): Promise<void> {
@@ -9,26 +11,22 @@ export class StartCommandHandler {
       const extension = path.extname(uri.fsPath);
       const fileNameWithoutExtension = path.basename(uri.fsPath, extension);
 
-      if (fileNameWithoutExtension.toLowerCase() === "index") {
+      if (fileNameWithoutExtension.toLowerCase() === 'index' || Helper.pathContainsIgnoredFragment(uri.fsPath)) {
         resolve();
         return;
       }
 
-      const barrelFiles = await vscode.workspace.findFiles(
-        new vscode.RelativePattern(folderPath, `index${extension}`)
-      );
+      const barrelFiles = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, `index${extension}`));
 
       if (barrelFiles.length === 0) {
         resolve();
       } else {
-        const barrelFileUri = vscode.Uri.file(
-          path.join(folderPath, `index${extension}`)
-        );
+        const barrelFileUri = vscode.Uri.file(path.join(folderPath, `index${extension}`));
         const exportStatement = `export * from './${fileNameWithoutExtension}';\n`;
 
         const document = await vscode.workspace.openTextDocument(barrelFileUri);
         if (document.lineCount >= 1) {
-          if (document.lineAt(0).text.indexOf("auto-barrel-ignore") !== -1) {
+          if (document.lineAt(0).text.indexOf('auto-barrel-ignore') !== -1) {
             resolve();
             return;
           }
@@ -36,25 +34,19 @@ export class StartCommandHandler {
         const newLinePosition = document.lineCount + 1;
 
         const workspaceEdit = new vscode.WorkspaceEdit();
-        workspaceEdit.insert(
-          barrelFileUri,
-          new vscode.Position(newLinePosition, 0),
-          exportStatement
-        );
+        workspaceEdit.insert(barrelFileUri, new vscode.Position(newLinePosition, 0), exportStatement);
         const result = await vscode.workspace.applyEdit(workspaceEdit);
 
         if (result) {
-          vscode.window.showInformationMessage(
-            `The new file ${fileName} was added to the barrel index${extension}`,
-            { modal: false }
-          );
+          vscode.window.showInformationMessage(`The new file ${fileName} was added to the barrel index${extension}`, {
+            modal: false
+          });
 
           resolve();
         } else {
-          vscode.window.showWarningMessage(
-            `Unable to add file ${fileName} to barrel index${extension}`,
-            { modal: false }
-          );
+          vscode.window.showWarningMessage(`Unable to add file ${fileName} to barrel index${extension}`, {
+            modal: false
+          });
 
           reject();
         }
@@ -67,16 +59,12 @@ export class StartCommandHandler {
       const fileName = path.basename(uri.fsPath);
       const extension = path.extname(uri.fsPath);
       const fileNameWithoutExtension = path.basename(uri.fsPath, extension);
-      const barrelFiles = await vscode.workspace.findFiles(
-        new vscode.RelativePattern(folderPath, `index${extension}`)
-      );
+      const barrelFiles = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, `index${extension}`));
 
       if (barrelFiles.length === 0) {
         resolve();
       } else {
-        const barrelFileUri = vscode.Uri.file(
-          path.join(folderPath, `index${extension}`)
-        );
+        const barrelFileUri = vscode.Uri.file(path.join(folderPath, `index${extension}`));
         const exportTarget = `./${fileNameWithoutExtension}`;
 
         const document = await vscode.workspace.openTextDocument(barrelFileUri);
