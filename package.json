@@ -2,7 +2,7 @@
   "name": "auto-barrel",
   "displayName": "Auto Barrel",
   "description": "Provides a command to create a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "publisher": "mikehanson",
   "repository": "https://github.com/testpossessed/auto-barrel",
   "icon": "images/icon.png",
@@ -27,8 +27,14 @@
           "type": "string",
           "default": "ts",
           "description": "The default extension to use for barrel file when it cannot be determined from the contents of the folder",
-          "enum": ["ts", "js"],
-          "enumDescriptions": ["Create a TypeScript barrel", "Create a JavaScript barrel"]
+          "enum": [
+            "ts",
+            "js"
+          ],
+          "enumDescriptions": [
+            "Create a TypeScript barrel",
+            "Create a JavaScript barrel"
+          ]
         },
         "autoBarrel.alwaysUseDefaultLanguageExtension": {
           "type": "boolean",
@@ -44,10 +50,16 @@
           "type": "string",
           "default": ".spec,.test",
           "description": "Comman separated list of file path fragments that should be ignored"
+        },
+        "autoBarrel.useImportAliasExportPattern": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether files should be imported with an alias that is then exported"
         }
       }
     },
-    "commands": [{
+    "commands": [
+      {
         "command": "autoBarrel.createBarrel",
         "title": "Create Barrel"
       },
@@ -61,17 +73,20 @@
       }
     ],
     "menus": {
-      "commandPalette": [{
+      "commandPalette": [
+        {
           "command": "autoBarrel.start"
         },
         {
           "command": "autoBarrel.stop"
         }
       ],
-      "explorer/context": [{
-        "command": "autoBarrel.createBarrel",
-        "when": "explorerViewletFocus && explorerResourceIsFolder"
-      }]
+      "explorer/context": [
+        {
+          "command": "autoBarrel.createBarrel",
+          "when": "explorerViewletFocus && explorerResourceIsFolder"
+        }
+      ]
     }
   },
   "scripts": {

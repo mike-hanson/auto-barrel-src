@@ -46,3 +46,20 @@ New setting for list of path fragments that should be ignored with default of ".
 Reverted changes in [1.0.2] as it was unreliable
 Create Barrel uses new setting to prevent files from being included in new barrel file
 Start Command handler uses new setting to prevent new files from being added to existing barrel files
+
+## [1.1.0] 2019-02-13
+
+### Added
+New setting to enable using an import | alias | export pattern for files added to a barrel so instead of this
+```javascript
+export * from './auth.actions';
+```
+With the setting enabled you get this
+```javascript
+import * as AuthActions from './auth.actions';
+
+export { AuthActions };
+```
+
+### Fixed
+Issue where windows path separator was hard coded

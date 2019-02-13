@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 export class Helper {
   public static pathContainsIgnoredFragment(path: string): boolean {
@@ -15,5 +16,20 @@ export class Helper {
       }
     }
     return false;
+  }
+
+  public static buildAlias(fileName: string): string {
+    const actualFileName = path.basename(fileName);
+    const aliasParts: string[] = [];
+
+    const fileNameParts = actualFileName.split('.');
+    for (const part of fileNameParts) {
+      const partElements = part.split('-');
+      for (const element of partElements) {
+        aliasParts.push(element.charAt(0).toUpperCase() + element.slice(1));
+      }
+    }
+
+    return aliasParts.join('');
   }
 }

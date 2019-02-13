@@ -46,6 +46,22 @@ A comma separated list of path fragments that should be ignored. This defaults t
 
 The setting is used to prevent files where the full path contains any of the fragments from being added to new or existing barrel files.
 
+```javascript
+'autoBarrel.useImportAliasExportPattern';
+```
+
+This defaults to false.  If this is set to true then instead of simply exporting files included in the barral like this
+```javascript
+export * from './auth.actions';
+```
+We import the file with an alias derived from the name and export the alias something like this
+```javascript
+import * as AuthActions from './auth.actions';
+
+export { AuthActions };
+```
+The alias uses both dots and hyphens as word separators to build the alias.  A file name like **login-page.actions** will result in an alias of **LoginPageActions**
+
 ## Ignoring Potential Barrel Files
 
 If your workspace/s contain existing index.ts or index.js files that are matched by the autoBarrel.watchGlob pattern, but they are not barrel files you can tell Auto Barrel to ignore them during automatic monitoring by adding the following comment as the first line of the file.
