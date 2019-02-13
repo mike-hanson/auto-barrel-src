@@ -2,12 +2,10 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { Helper } from './helper';
-import { CreateBarrelCommandHandler } from './create-barrel-command-handler';
 
 export class StartCommandHandler {
 
   private static readonly exportPrefix = 'export { ';
-  private static configuration = vscode.workspace.getConfiguration('autoBarrel');
 
   public static async handleFileAdded(uri: vscode.Uri): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
