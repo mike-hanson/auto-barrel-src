@@ -2,7 +2,7 @@
   "name": "auto-barrel",
   "displayName": "Auto Barrel",
   "description": "Provides a command to create a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "publisher": "mikehanson",
   "repository": "https://github.com/testpossessed/auto-barrel",
   "icon": "images/icon.png",
@@ -58,8 +58,7 @@
         }
       }
     },
-    "commands": [
-      {
+    "commands": [{
         "command": "autoBarrel.createBarrel",
         "title": "Create Barrel"
       },
@@ -73,20 +72,17 @@
       }
     ],
     "menus": {
-      "commandPalette": [
-        {
+      "commandPalette": [{
           "command": "autoBarrel.start"
         },
         {
           "command": "autoBarrel.stop"
         }
       ],
-      "explorer/context": [
-        {
-          "command": "autoBarrel.createBarrel",
-          "when": "explorerViewletFocus && explorerResourceIsFolder"
-        }
-      ]
+      "explorer/context": [{
+        "command": "autoBarrel.createBarrel",
+        "when": "explorerViewletFocus && explorerResourceIsFolder"
+      }]
     }
   },
   "scripts": {

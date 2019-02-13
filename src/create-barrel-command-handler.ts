@@ -33,7 +33,7 @@ export class CreateBarrelCommandHandler {
       if (!file.path.endsWith(languageExtension) || Helper.pathContainsIgnoredFragment(file.path)) {
         continue;
       }
-      const fileName = path.basename(file.path, languageExtension);
+      const fileName = path.basename(file.path, `.${languageExtension}`);
       const position = new vscode.Position(currentLine++, 0);
       if (useImportAliasExportPattern) {
         const alias = Helper.buildAlias(fileName);

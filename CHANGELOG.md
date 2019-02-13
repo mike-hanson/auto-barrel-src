@@ -63,3 +63,8 @@ export { AuthActions };
 
 ### Fixed
 Issue where windows path separator was hard coded
+
+## [1.1.1] 2019-02-13
+
+### Fixed
+Issue introduced in 1.1.0 where trailing . was left on import statements
