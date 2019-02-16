@@ -36,7 +36,14 @@ export class StartCommandHandler {
         const workspaceEdit = new vscode.WorkspaceEdit();
         const isUsingImportAliasExportPattern = document.getText().indexOf(StartCommandHandler.exportPrefix) !== -1;
         if (!isUsingImportAliasExportPattern) {
-          const exportStatement = `export * from './${fileNameWithoutExtension}';\n`;
+          let exportStatement: string;
+          const exportsAsDefault = await Helper.containsDefaultExport(uri);
+          if (exportsAsDefault) {
+            exportStatement = `export { default as ${fileNameWithoutExtension} } from './${fileNameWithoutExtension}';\n`;
+          }
+          else {
+            exportStatement = `export * from './${fileNameWithoutExtension}';\n`;
+          }
           const newLinePosition = document.lineCount + 1;
           workspaceEdit.insert(barrelFileUri, new vscode.Position(newLinePosition, 0), exportStatement);
         }

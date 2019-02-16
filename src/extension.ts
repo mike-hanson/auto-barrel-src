@@ -21,8 +21,10 @@ export function activate(context: vscode.ExtensionContext) {
       fileSystemWatcher = vscode.workspace.createFileSystemWatcher(watchGlob, false, true, false);
       fileSystemWatcher.onDidCreate(StartCommandHandler.handleFileAdded);
       fileSystemWatcher.onDidDelete(StartCommandHandler.handleFileDeleted);
+      vscode.window.showInformationMessage('Auto Barrel was started successfully.');
     } catch (error) {
       console.error(error);
+      vscode.window.showInformationMessage('Auto Barrel start failed, please check the console for more information.');
     }
   });
 

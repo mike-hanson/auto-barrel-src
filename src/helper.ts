@@ -32,4 +32,9 @@ export class Helper {
 
     return aliasParts.join('');
   }
+
+  public static async containsDefaultExport(uri: vscode.Uri): Promise<boolean> {
+    const document = await vscode.workspace.openTextDocument(uri);
+    return document.getText().indexOf('export default') !== -1;
+  }
 }

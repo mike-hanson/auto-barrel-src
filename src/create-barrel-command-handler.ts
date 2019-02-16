@@ -22,7 +22,7 @@ export class CreateBarrelCommandHandler {
     CreateBarrelCommandHandler.createBarrel(resource, languageExtension, files);
   }
 
-  private static createBarrel(resource: vscode.Uri, languageExtension: string, files: vscode.Uri[]) {
+  private static async createBarrel(resource: vscode.Uri, languageExtension: string, files: vscode.Uri[]) {
     const useImportAliasExportPattern: boolean = CreateBarrelCommandHandler.configuration.get<boolean>('useImportAliasExportPattern') || false;
     const workspaceEdit = new vscode.WorkspaceEdit();
     const fileUri = vscode.Uri.file(path.join(resource.fsPath, `index.${languageExtension}`));
@@ -41,7 +41,13 @@ export class CreateBarrelCommandHandler {
         workspaceEdit.insert(fileUri, position, `import * as ${alias} from './${fileName}';\n`);
       }
       else {
-        workspaceEdit.insert(fileUri, position, `export * from './${fileName}';\n`);
+        const exportsAsDefault = await Helper.containsDefaultExport(file);
+        if (exportsAsDefault) {
+          workspaceEdit.insert(fileUri, position, `export { default as ${fileName} } from './${fileName}';\n`);
+        }
+        else {
+          workspaceEdit.insert(fileUri, position, `export * from './${fileName}';\n`);
+        }
       }
     }
 

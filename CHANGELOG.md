@@ -68,3 +68,9 @@ Issue where windows path separator was hard coded
 
 ### Fixed
 Issue introduced in 1.1.0 where trailing . was left on import statements
+
+## [1.2.0] 2019-02-16
+
+### Added
+Support for default exports
+Notification that Start command was successful
