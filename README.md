@@ -19,16 +19,16 @@ You can also prevent Auto Barrel from treating existing index.[tj]s files as bar
 The following settings can be configured to control the behaviour of Auto Barrel.
 
 ```javascript
-'autoBarrel.defaultLanguageExtension';
+'autoBarrel.defaultLanguage';
 ```
 
-This defaults to TypeScript (ts). Supported values are ts or js. When Create Barrel is executed Auto Barrel attempts to determine the language extension from the contents of the folder. If all of the files in the folder have the same extension it will create a barrel file with that extension. If the file contains both .ts and .js files Create Barrel will use this setting.
+This defaults to TypeScript. Supported values are TypeScript or JavaScript. When Create Barrel is executed Auto Barrel attempts to determine the language extension from the contents of the folder. If all of the files in the folder have the same extension it will create a barrel file with that extension. If the file contains a mix of JavaScript and TypeScript files Create Barrel will use this setting.
 
 ```javascript
-'autoBarrel.alwaysUseDefaultLanguageExtension';
+'autoBarrel.alwaysUseDefaultLanguage';
 ```
 
-This defaults to false. If this is set to true then the Create Barrel command will not attempt to determine the language extension it will create a barrel file with the extension set in autoBarrel.defaultLanguageExtension.
+This defaults to false. If this is set to true then the Create Barrel command will not attempt to determine the language extension it will create a barrel file with the appropriate language specified.
 
 ```javascript
 'autoBarrel.watchGlob';

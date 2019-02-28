@@ -74,3 +74,12 @@ Issue introduced in 1.1.0 where trailing . was left on import statements
 ### Added
 Support for default exports
 Notification that Start command was successful
+
+## [1.3.0] 2019-02-28
+
+### Added
+Support for including .jsx and .tsx files in barrels.  Barrel files themselves still have either .ts or .js.
+
+### Changed
+Removed the use of Extension from Language settings.  You now select TypeScript or JavaScript and the appropriate file extension is used.
+

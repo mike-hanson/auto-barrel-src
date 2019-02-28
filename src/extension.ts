@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
     try {
-      const watchGlob = vscode.workspace.getConfiguration('autoBarrel').get<string>('watchGlob') || '**/src/**/*.[tj]s';
+      const watchGlob = vscode.workspace.getConfiguration('autoBarrel').get<string>('watchGlob') || '**/src/**/*.{js,jsx,ts,tsx}';
       fileSystemWatcher = vscode.workspace.createFileSystemWatcher(watchGlob, false, true, false);
       fileSystemWatcher.onDidCreate(StartCommandHandler.handleFileAdded);
       fileSystemWatcher.onDidDelete(StartCommandHandler.handleFileDeleted);

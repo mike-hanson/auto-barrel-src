@@ -71,12 +71,12 @@ export class CreateBarrelCommandHandler {
 
   private static getLanguageExtension(files: vscode.Uri[]): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
-      const defaultLanguageExtension: string = CreateBarrelCommandHandler.configuration.get<string>('defaultLanguageExtension') || 'ts';
+      const defaultLanguage: string = CreateBarrelCommandHandler.configuration.get<string>('defaultLanguage') || 'TypeScript';
       const alwaysUseDefaultLanguageExtension: boolean =
-        CreateBarrelCommandHandler.configuration.get<boolean>('alwaysUseDefaultLanguageExtension') || false;
+        CreateBarrelCommandHandler.configuration.get<boolean>('alwaysUseDefaultLanguage') || false;
 
       if (alwaysUseDefaultLanguageExtension === true) {
-        resolve(defaultLanguageExtension);
+        resolve(defaultLanguage);
       } else {
         let languageExtension: string | undefined = undefined;
         if (files.every(f => f.path.endsWith('.ts') || f.path.endsWith('.tsx'))) {
@@ -86,7 +86,7 @@ export class CreateBarrelCommandHandler {
         }
 
         if (typeof languageExtension === 'undefined') {
-          resolve(defaultLanguageExtension);
+          resolve(defaultLanguage === 'TypeScript'? 'ts': 'js');
         } else {
           resolve(languageExtension);
         }
