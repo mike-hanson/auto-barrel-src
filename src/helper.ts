@@ -2,6 +2,11 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 export class Helper {
+  private static supportedExtensions: { [index: string]: string[]; js: string[]; ts: string[]; } = {
+    js: ['.js', '.jsx'],
+    ts: ['.ts', '.tsx']
+  };
+
   public static pathContainsIgnoredFragment(path: string): boolean {
     const ignoredFragmentsSetting =
       vscode.workspace.getConfiguration('autoBarrel').get<string>('ignoreFilePathContainingAnyOf') || undefined;
@@ -16,6 +21,13 @@ export class Helper {
       }
     }
     return false;
+  }
+
+  public static shouldBeIncludedInBarrel(filePath: string, languageExtension: string): boolean {
+    const possibleExtensions = Helper.supportedExtensions[languageExtension];
+    const extension = path.extname(filePath);
+
+    return possibleExtensions.indexOf(extension) !== -1 && !Helper.pathContainsIgnoredFragment(filePath);
   }
 
   public static buildAlias(fileName: string): string {
@@ -37,4 +49,5 @@ export class Helper {
     const document = await vscode.workspace.openTextDocument(uri);
     return document.getText().indexOf('export default') !== -1;
   }
+
 }

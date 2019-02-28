@@ -154,3 +154,5 @@ export class StartCommandHandler {
     });
   }
 }
+
+export default {prop: 1}

@@ -8,7 +8,7 @@ export class CreateBarrelCommandHandler {
   private static configuration = vscode.workspace.getConfiguration('autoBarrel');
 
   public static async execute(resource: vscode.Uri): Promise<void> {
-    const files = await vscode.workspace.findFiles(new vscode.RelativePattern(resource.path, '*.[tj]s'));
+    const files = await vscode.workspace.findFiles(new vscode.RelativePattern(resource.path, '*.{js,jsx,ts,tsx}'));
 
     const fileIndex = files.findIndex(f => f.path.endsWith('index.ts') || f.path.endsWith('index.js'));
 
@@ -30,10 +30,11 @@ export class CreateBarrelCommandHandler {
     const aliases: string[] = [];
     let currentLine = 0;
     for (const file of files) {
-      if (!file.path.endsWith(languageExtension) || Helper.pathContainsIgnoredFragment(file.path)) {
+      if (!Helper.shouldBeIncludedInBarrel(file.path, languageExtension)) {
         continue;
       }
-      const fileName = path.basename(file.path, `.${languageExtension}`);
+      const fileExtension = path.extname(file.path);
+      const fileName = path.basename(file.path, fileExtension);
       const position = new vscode.Position(currentLine++, 0);
       if (useImportAliasExportPattern) {
         const alias = Helper.buildAlias(fileName);
@@ -78,9 +79,9 @@ export class CreateBarrelCommandHandler {
         resolve(defaultLanguageExtension);
       } else {
         let languageExtension: string | undefined = undefined;
-        if (files.every(f => f.path.endsWith('.ts'))) {
+        if (files.every(f => f.path.endsWith('.ts') || f.path.endsWith('.tsx'))) {
           languageExtension = 'ts';
-        } else if (files.every(f => f.path.endsWith('.js'))) {
+        } else if (files.every(f => f.path.endsWith('.js') || f.path.endsWith('.jsx'))) {
           languageExtension = 'js';
         }
 
