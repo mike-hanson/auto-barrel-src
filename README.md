@@ -14,6 +14,10 @@ Auto Barrel - Stop - From the command pallete execute this command to stop autom
 
 You can also prevent Auto Barrel from treating existing index.[tj]s files as barrels by adding a comment to the file
 
+### Recursive Barelling
+
+As of v1.4.0 Auto Barrel supports including files in sub folders in a barrel file.  When Auto Barrel - Start is active and this feature is enabled (it is enabled by default) Auto Barrel walks up the folder tree to find the nearest ancestor index.[jt]s file to manage.  This can lead to a file with the name index.* being incorrectly identified as a barrel.  If this happens the file will need to be excluded using either the setting or an appropriate comment as described below. 
+
 ## Extension Settings
 
 The following settings can be configured to control the behaviour of Auto Barrel.
@@ -61,6 +65,14 @@ import * as AuthActions from './auth.actions';
 export { AuthActions };
 ```
 The alias uses both dots and hyphens as word separators to build the alias.  A file name like **login-page.actions** will result in an alias of **LoginPageActions**
+
+```javascript
+'autoBarrel.disableRecursiveBarrelling';
+```
+
+This defaults to false.
+
+If this is set to true then files in sub folders below the barrel file will not be included when using the Create Barrel command.  Also when the Auto Barrel - Start command is active only barrel files in the same folder as a new or deleted file will be affected, Auto Barrel will not walk up the folder tree looking for a barrel file.
 
 ## Ignoring Potential Barrel Files
 

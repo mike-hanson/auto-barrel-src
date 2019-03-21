@@ -8,7 +8,7 @@ export class CreateBarrelCommandHandler {
   private static configuration = vscode.workspace.getConfiguration('autoBarrel');
 
   public static async execute(resource: vscode.Uri): Promise<void> {
-    const files = await vscode.workspace.findFiles(new vscode.RelativePattern(resource.path, '*.{js,jsx,ts,tsx}'));
+    const files = await vscode.workspace.findFiles(new vscode.RelativePattern(resource.path , '**/*.{js,jsx,ts,tsx}'));
 
     const fileIndex = files.findIndex(f => f.path.endsWith('index.ts') || f.path.endsWith('index.js'));
 
@@ -35,19 +35,20 @@ export class CreateBarrelCommandHandler {
       }
       const fileExtension = path.extname(file.path);
       const fileName = path.basename(file.path, fileExtension);
+      const fileRelativePath = path.relative(resource.path, file.path).replace(/\\/g, '/').replace('../', './').replace(fileExtension, '');
       const position = new vscode.Position(currentLine++, 0);
       if (useImportAliasExportPattern) {
         const alias = Helper.buildAlias(fileName);
         aliases.push(alias);
-        workspaceEdit.insert(fileUri, position, `import * as ${alias} from './${fileName}';\n`);
+        workspaceEdit.insert(fileUri, position, `import * as ${alias} from './${fileRelativePath}';\n`);
       }
       else {
         const exportsAsDefault = await Helper.containsDefaultExport(file);
         if (exportsAsDefault) {
-          workspaceEdit.insert(fileUri, position, `export { default as ${fileName} } from './${fileName}';\n`);
+          workspaceEdit.insert(fileUri, position, `export { default as ${fileName} } from './${fileRelativePath}';\n`);
         }
         else {
-          workspaceEdit.insert(fileUri, position, `export * from './${fileName}';\n`);
+          workspaceEdit.insert(fileUri, position, `export * from './${fileRelativePath}';\n`);
         }
       }
     }

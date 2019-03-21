@@ -9,7 +9,6 @@ export class StartCommandHandler {
 
   public static async handleFileAdded(uri: vscode.Uri): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
-      const folderPath = path.dirname(uri.fsPath);
       const fileName = path.basename(uri.fsPath);
       const extension = path.extname(uri.fsPath);
       const fileNameWithoutExtension = path.basename(uri.fsPath, extension);
@@ -19,14 +18,11 @@ export class StartCommandHandler {
         return;
       }
 
-      const barrelFileName = `index${extension.substr(0, 3)}`;
-      const barrelFiles = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, barrelFileName));
+      const barrelFileUri = await Helper.findClosestBarrel(uri);
 
-      if (barrelFiles.length === 0) {
+      if (typeof barrelFileUri === 'undefined') {
         resolve();
       } else {
-        const barrelFileUri = vscode.Uri.file(path.join(folderPath, barrelFileName));
-
         const document = await vscode.workspace.openTextDocument(barrelFileUri);
         if (document.lineCount >= 1) {
           if (document.lineAt(0).text.indexOf('auto-barrel-ignore') !== -1) {
@@ -34,16 +30,17 @@ export class StartCommandHandler {
             return;
           }
         }
+        const relativeFilePath = path.relative(barrelFileUri.path, uri.path).replace(/\\/g, '/').replace('../', './').replace(extension, '');
         const workspaceEdit = new vscode.WorkspaceEdit();
         const isUsingImportAliasExportPattern = document.getText().indexOf(StartCommandHandler.importPrefix) !== -1;
         if (!isUsingImportAliasExportPattern) {
           let exportStatement: string;
           const exportsAsDefault = await Helper.containsDefaultExport(uri);
           if (exportsAsDefault) {
-            exportStatement = `export { default as ${fileNameWithoutExtension} } from './${fileNameWithoutExtension}';\n`;
+            exportStatement = `export { default as ${fileNameWithoutExtension} } from '${relativeFilePath}';\n`;
           }
           else {
-            exportStatement = `export * from './${fileNameWithoutExtension}';\n`;
+            exportStatement = `export * from '${relativeFilePath}';\n`;
           }
           const newLinePosition = document.lineCount + 1;
           workspaceEdit.insert(barrelFileUri, new vscode.Position(newLinePosition, 0), exportStatement);
@@ -51,7 +48,7 @@ export class StartCommandHandler {
         else {
           const alias = Helper.buildAlias(fileNameWithoutExtension);
 
-          const importStatement = `import * as ${alias} from './${fileNameWithoutExtension}';\n`;
+          const importStatement = `import * as ${alias} from '${relativeFilePath}';\n`;
           let newLinePosition = 0;
           let exportLine: vscode.TextLine | any;
 
@@ -76,14 +73,15 @@ export class StartCommandHandler {
         }
         const result = await vscode.workspace.applyEdit(workspaceEdit);
 
+        const barrelRelativePath = path.relative(uri.path, barrelFileUri.path).replace(/\\/g, '/');
         if (result) {
-          vscode.window.showInformationMessage(`The new file ${fileName} was added to the barrel index${extension}`, {
+          vscode.window.showInformationMessage(`The new file ${fileName} was added to the barrel ${barrelRelativePath}`, {
             modal: false
           });
 
           resolve();
         } else {
-          vscode.window.showWarningMessage(`Unable to add file ${fileName} to barrel index${extension}`, {
+          vscode.window.showWarningMessage(`Unable to add file ${fileName} to barrel ${barrelRelativePath}`, {
             modal: false
           });
 
@@ -94,19 +92,16 @@ export class StartCommandHandler {
   }
   public static async handleFileDeleted(uri: vscode.Uri): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
-      const folderPath = path.dirname(uri.fsPath);
       const fileName = path.basename(uri.fsPath);
       const extension = path.extname(uri.fsPath);
       const fileNameWithoutExtension = path.basename(uri.fsPath, extension);
-      const barrelFileName = `index${extension.substr(0, 3)}`;
 
-      const barrelFiles = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, barrelFileName));
+      const barrelFileUri = await Helper.findClosestBarrel(uri);
 
-      if (barrelFiles.length === 0) {
+      if (typeof barrelFileUri === 'undefined') {
         resolve();
       } else {
-        const barrelFileUri = vscode.Uri.file(path.join(folderPath, barrelFileName));
-        const exportTarget = `./${fileNameWithoutExtension}`;
+        const exportTarget = path.relative(barrelFileUri.path, uri.path).replace(/\\/g, '/').replace('../', './').replace(extension, '');
 
         const document = await vscode.workspace.openTextDocument(barrelFileUri);
 
@@ -138,16 +133,17 @@ export class StartCommandHandler {
 
           workspaceEdit.delete(barrelFileUri, <vscode.Range>existingLineRange);
           const result = await vscode.workspace.applyEdit(workspaceEdit);
+          const barrelRelativePath = path.relative(uri.path, barrelFileUri.path).replace(/\\/g, '/');
 
           if (result) {
             vscode.window.showInformationMessage(
-              `The file import for ${fileName} was removed from the barrel ${barrelFileName}`
+              `The file import for ${fileName} was removed from the barrel ${barrelRelativePath}`
             );
 
             resolve();
           } else {
             vscode.window.showWarningMessage(
-              `Unable to remove import for ${fileName} from the barrel ${barrelFileName} in the same folder`
+              `Unable to remove import for ${fileName} from the barrel ${barrelRelativePath} in the same folder`
             );
 
             reject();

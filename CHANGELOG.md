@@ -83,3 +83,15 @@ Support for including .jsx and .tsx files in barrels.  Barrel files themselves s
 ### Changed
 Removed the use of Extension from Language settings.  You now select TypeScript or JavaScript and the appropriate file extension is used.
 
+## [1.4.0] 2019-03-21
+
+### Added
+Support for including files in sub folders in a barrel when creating a new barrel
+Support for managing files in sub folders when Auto Barrel - Start is active
+Setting to disable sub folder features for both commands
+
+### Known Issues
+With sub folder support enabled some index.* files may be incorrectly recognised as barrel files making it necessary to add and exclusion for the file.
+
+
+

@@ -2,7 +2,7 @@
   "name": "auto-barrel",
   "displayName": "Auto Barrel",
   "description": "Provides a command to create a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "publisher": "mikehanson",
   "repository": "https://github.com/testpossessed/auto-barrel",
   "icon": "images/icon.png",
@@ -49,16 +49,22 @@
         "autoBarrel.ignoreFilePathContainingAnyOf": {
           "type": "string",
           "default": ".spec,.test",
-          "description": "Comman separated list of file path fragments that should be ignored"
+          "description": "Comma separated list of file path fragments that should be ignored"
         },
         "autoBarrel.useImportAliasExportPattern": {
           "type": "boolean",
           "default": false,
           "description": "Indicates whether files should be imported with an alias that is then exported"
+        },
+        "autoBarrel.disableRecursiveBarrelling": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether support for including files in sub folders in a barrel is disabled"
         }
       }
     },
-    "commands": [{
+    "commands": [
+      {
         "command": "autoBarrel.createBarrel",
         "title": "Create Barrel"
       },
@@ -72,17 +78,20 @@
       }
     ],
     "menus": {
-      "commandPalette": [{
+      "commandPalette": [
+        {
           "command": "autoBarrel.start"
         },
         {
           "command": "autoBarrel.stop"
         }
       ],
-      "explorer/context": [{
-        "command": "autoBarrel.createBarrel",
-        "when": "explorerViewletFocus && explorerResourceIsFolder"
-      }]
+      "explorer/context": [
+        {
+          "command": "autoBarrel.createBarrel",
+          "when": "explorerViewletFocus && explorerResourceIsFolder"
+        }
+      ]
     }
   },
   "scripts": {
