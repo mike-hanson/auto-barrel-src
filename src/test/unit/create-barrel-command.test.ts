@@ -1,4 +1,4 @@
-import * as expect from 'expect';
+import { assert } from 'chai';
 
 import { CreateBarrelCommand } from '../../create-barrel-command';
 import { Substitute, Arg } from '@fluffy-spoon/substitute';
@@ -18,7 +18,7 @@ describe('CreateBarrelCommand', () => {
         'export * from \'./test2\';',
         'export * from \'./test3\';'
     ];
-    const barrelDetails = {barrelFilePath: `${rootFolder}/index.ts`, contentLines};
+    const barrelDetails = { barrelFilePath: `${rootFolder}/index.ts`, contentLines };
 
     let vsCodeApi: ObjectSubstitute<OmitProxyMethods<IVsCodeApi>, IVsCodeApi> & IVsCodeApi;
     let barrelBuilder: any;
@@ -27,27 +27,25 @@ describe('CreateBarrelCommand', () => {
     beforeEach(() => {
         vsCodeApi = Substitute.for<IVsCodeApi>();
         barrelBuilder = Substitute.for<IBarrelBuilder>();
-        target = new CreateBarrelCommand(vsCodeApi, barrelBuilder);        
+        target = new CreateBarrelCommand(vsCodeApi, barrelBuilder);
     });
-    
+
     it('should be defined', () => {
-        expect(target).toBeDefined();    
+        assert.isDefined(target);
     });
 
     it('should define a method to execute the command', () => {
-        expect(typeof target.execute).toBe('function');
-        expect(target.execute.length).toBe(1);
+        assert.isFunction(target.execute);
+        assert.equal(target.execute.length, 1);
     });
 
-    it.only('should fetch files via vs code api', async () => {
+    it('should fetch files via vs code api', async () => {
         assumeVsCodeApiFindsFiles();
         assumeBarrelBuildReturnsResult();
 
         await target.execute(rootFolder);
 
-        // expect(
-            vsCodeApi.received(1).findFiles(rootFolder);
-            // );
+        vsCodeApi.received(1).findFiles(rootFolder);
     });
 
     it('should delegate to barrel builder to get content for barrel', async () => {
@@ -56,7 +54,7 @@ describe('CreateBarrelCommand', () => {
 
         await target.execute(rootFolder);
 
-        expect(barrelBuilder.received(1).build(rootFolder, files));
+        barrelBuilder.received(1).build(rootFolder, files);
     });
 
     it('should delegate to vs code api to write barrel file', async () => {
@@ -64,17 +62,15 @@ describe('CreateBarrelCommand', () => {
         assumeBarrelBuildReturnsResult();
 
         await target.execute(rootFolder);
-        
-        // expect(
-            vsCodeApi.received().writeFile(barrelDetails.barrelFilePath, barrelDetails.contentLines);
-                // ));
+
+        vsCodeApi.received(1).writeFile(barrelDetails.barrelFilePath, barrelDetails.contentLines);
     });
 
-    function assumeVsCodeApiFindsFiles() {        
+    function assumeVsCodeApiFindsFiles() {
         vsCodeApi.findFiles(rootFolder).returns(Promise.resolve(files));
     }
 
-    function assumeBarrelBuildReturnsResult(){
-        barrelBuilder.build(Arg.all()).return(Promise.resolve(barrelDetails));
+    function assumeBarrelBuildReturnsResult() {
+        barrelBuilder.build(Arg.all()).returns(Promise.resolve(barrelDetails));
     }
 });

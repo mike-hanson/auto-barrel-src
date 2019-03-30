@@ -1,4 +1,4 @@
-import * as expect from 'expect';
+import { assert } from 'chai';
 import Substitute from '@fluffy-spoon/substitute';
 
 import { IConfiguration } from '../../abstractions/configuration.interface';
@@ -18,45 +18,45 @@ describe('Utility', () => {
     });
 
     it('should be defined', () => {
-        expect(target).toBeDefined();
+        assert.isDefined(target);
     });
 
     it('should implement a method to get build an alias for a file', () => {
-        expect(typeof target.buildAlias).toBe('function');
-        expect(target.buildAlias.length).toBe(1);
+        assert.isFunction(target.buildAlias);
+        assert.equal(target.buildAlias.length, 1);
     });
 
     it('should implement a method to determine whether a file contains a default export', () => {
-        expect(typeof target.containsDefaultExport).toBe('function');
-        expect(target.containsDefaultExport.length).toBe(1);
+        assert.isFunction(target.containsDefaultExport);
+        assert.equal(target.containsDefaultExport.length, 1);
     });
 
     it('should implement a method to get language extension', () => {
-        expect(typeof target.getLanguageExtension).toBe('function');
-        expect(target.getLanguageExtension.length).toBe(1);
+        assert.isFunction(target.getLanguageExtension);
+        assert.equal(target.getLanguageExtension.length, 1);
     });
 
     it('should implement a method to determine whether a file is exclude by config', () => {
-        expect(typeof target.pathContainsIgnoredFragment).toBe('function');
-        expect(target.pathContainsIgnoredFragment.length).toBe(1);
+        assert.isFunction(target.pathContainsIgnoredFragment);
+        assert.equal(target.pathContainsIgnoredFragment.length, 1);
     });
 
     it('should implement a method to determine whether a file should be included in a barrel', () => {
-        expect(typeof target.shouldBeIncludedInBarrel).toBe('function');
-        expect(target.shouldBeIncludedInBarrel.length).toBe(2);
+        assert.isFunction(target.shouldBeIncludedInBarrel);
+        assert.equal(target.shouldBeIncludedInBarrel.length, 2);
     });
 
     describe('buildAlias', () => {
         it('should return correct alias for simple file name', () => {
-            expect(target.buildAlias('name.ext')).toBe('Name');
+            assert.equal(target.buildAlias('name.ext'), 'Name');
         });
 
         it('should return correct alias for file name with hyphens to separate words', () => {
-            expect(target.buildAlias('my-name.ext')).toBe('MyName');
+            assert.equal(target.buildAlias('my-name.ext'), 'MyName');
         });
 
         it('should return correct alias for file name with multiple dot seprated parts', () => {
-            expect(target.buildAlias('my.name.ext')).toBe('MyName');
+            assert.equal(target.buildAlias('my.name.ext'), 'MyName');
         });
     });
 
@@ -65,14 +65,14 @@ describe('Utility', () => {
             vsCodeApi.openTextDocument('test1.ts').returns(Promise.resolve('testing \nexport default Test1'));
 
             const actual = await target.containsDefaultExport('test1.ts');
-            expect(actual).toBe(true);
+            assert.isTrue(actual);
         });
         
         it('should return correct result for file without default export', async () => {
             vsCodeApi.openTextDocument('test1.ts').returns(Promise.resolve('testing testing testing...'));
 
             const actual = await target.containsDefaultExport('test1.ts');
-            expect(actual).toBe(false);
+            assert.isFalse(actual);
         });
     });
 
@@ -86,7 +86,7 @@ describe('Utility', () => {
                 'C:\\barrel\\test3.ts'
             ];
 
-            expect(target.getLanguageExtension(filePaths)).toBe('ts');
+            assert.equal(target.getLanguageExtension(filePaths), 'ts');
         });
 
         it('should return correct extension when all files have .js extension', () => {
@@ -98,7 +98,7 @@ describe('Utility', () => {
                 'C:\\barrel\\test3.js'
             ];
 
-            expect(target.getLanguageExtension(filePaths)).toBe('js');
+            assert.equal(target.getLanguageExtension(filePaths), 'js');
         });
 
         it('should return default extension if configured to always use default', () => {
@@ -112,7 +112,7 @@ describe('Utility', () => {
                 'C:\\barrel\\test3.ts'
             ];
 
-            expect(target.getLanguageExtension(filePaths)).toBe(config.defaultExtension);
+            assert.equal(target.getLanguageExtension(filePaths), config.defaultExtension);
         });
 
         it('should return default extension if file extensions are mixed', () => {
@@ -123,7 +123,7 @@ describe('Utility', () => {
                 'C:\\barrel\\test2.js',
                 'C:\\barrel\\test3.ts'
             ];
-            expect(target.getLanguageExtension(filePaths)).toBe(defaultSettings.defaultExtension);
+            assert.equal(target.getLanguageExtension(filePaths), defaultSettings.defaultExtension);
         });
 
     });
@@ -132,13 +132,13 @@ describe('Utility', () => {
         it('should return true if file path contains any excluded fragment', () => {
             assumeDefaultConfiguration();
 
-            expect(target.pathContainsIgnoredFragment('some.test.ts')).toBe(true);
+            assert.equal(target.pathContainsIgnoredFragment('some.test.ts'), true);
         });
 
         it('should return false if file path does not contain any excluded fragment', () => {
             assumeDefaultConfiguration();
 
-            expect(target.pathContainsIgnoredFragment('some.class.ts')).toBe(false);
+            assert.equal(target.pathContainsIgnoredFragment('some.class.ts'), false);
         });
     });
 
@@ -146,35 +146,35 @@ describe('Utility', () => {
         it('should return true for file with supported extension and no excluded fragment', () => {
             assumeDefaultConfiguration();
 
-            expect(target.shouldBeIncludedInBarrel('some.class.ts', 'ts')).toBe(true);
-            expect(target.shouldBeIncludedInBarrel('some.class.tsx', 'ts')).toBe(true);
-            expect(target.shouldBeIncludedInBarrel('some.class.js', 'js')).toBe(true);
-            expect(target.shouldBeIncludedInBarrel('some.class.jsx', 'js')).toBe(true);
+            assert.isTrue(target.shouldBeIncludedInBarrel('some.class.ts', 'ts'));
+            assert.isTrue(target.shouldBeIncludedInBarrel('some.class.tsx', 'ts'));
+            assert.isTrue(target.shouldBeIncludedInBarrel('some.class.js', 'js'));
+            assert.isTrue(target.shouldBeIncludedInBarrel('some.class.jsx', 'js'));
         });
 
         it('should return false for file with unsupported extension', () => {
             assumeDefaultConfiguration();
 
-            expect(target.shouldBeIncludedInBarrel('some.class.vs', 'ts')).toBe(false);
-            expect(target.shouldBeIncludedInBarrel('some.class.vs', 'js')).toBe(false);
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.class.vs', 'ts'));
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.class.vs', 'js'));
         });
 
         it('should return false for file with supported extension but excluded fragment', () => {
             assumeDefaultConfiguration();
 
-            expect(target.shouldBeIncludedInBarrel('some.test.ts', 'ts')).toBe(false);
-            expect(target.shouldBeIncludedInBarrel('some.test.tsx', 'ts')).toBe(false);
-            expect(target.shouldBeIncludedInBarrel('some.test.js', 'js')).toBe(false);
-            expect(target.shouldBeIncludedInBarrel('some.test.jsx', 'js')).toBe(false);
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.test.ts', 'ts'));
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.test.tsx', 'ts'));
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.test.js', 'js'));
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.test.jsx', 'js'));
         });
 
         it('should return false for file with supported extension but does not match language extension', () => {
             assumeDefaultConfiguration();
 
-            expect(target.shouldBeIncludedInBarrel('some.test.ts', 'js')).toBe(false);
-            expect(target.shouldBeIncludedInBarrel('some.test.tsx', 'js')).toBe(false);
-            expect(target.shouldBeIncludedInBarrel('some.test.js', 'ts')).toBe(false);
-            expect(target.shouldBeIncludedInBarrel('some.test.jsx', 'ts')).toBe(false);
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.test.ts', 'js'));
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.test.tsx', 'js'));
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.test.js', 'ts'));
+            assert.isFalse(target.shouldBeIncludedInBarrel('some.test.jsx', 'ts'));
         });
     });
 

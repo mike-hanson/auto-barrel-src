@@ -1,14 +1,17 @@
 import * as vscode from 'vscode';
 
-import { CreateBarrelCommandHandler } from './create-barrel-command-handler';
 import { StartCommandHandler } from './start-command-handler';
+
+import { container } from './container';
+import { CreateBarrelCommand } from './create-barrel-command';
 
 let fileSystemWatcher: vscode.FileSystemWatcher | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
+  const createBarrelCommandHandler: CreateBarrelCommand = container.resolve<CreateBarrelCommand>('createBarrelCommand');
   const createBarrelCommand = vscode.commands.registerCommand(
     'autoBarrel.createBarrel',
-    CreateBarrelCommandHandler.execute
+    createBarrelCommandHandler.execute
   );
 
   const startCommand = vscode.commands.registerCommand('autoBarrel.start', () => {

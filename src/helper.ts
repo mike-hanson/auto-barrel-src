@@ -52,7 +52,7 @@ export class Helper {
 
   public static async findClosestBarrel(uri: vscode.Uri): Promise<vscode.Uri | undefined> {
 
-    return new Promise<vscode.Uri | undefined>(async (resolve, reject) => {
+    return new Promise<vscode.Uri | undefined>(async (resolve) => {
 
       const fileExtension = path.extname(uri.fsPath).substr(0, 3);
       const disableRecursiveBarrelling = vscode.workspace.getConfiguration('autoBarrel').get<boolean>('disableRecursiveBarrelling') || false;

@@ -24,8 +24,8 @@ export class CreateBarrelCommandHandler {
 
   private static async createBarrel(resource: vscode.Uri, languageExtension: string, files: vscode.Uri[]) {
     const useImportAliasExportPattern: boolean = CreateBarrelCommandHandler.configuration.get<boolean>('useImportAliasExportPattern') || false;
-    const workspaceEdit = new vscode.WorkspaceEdit();
     const fileUri = vscode.Uri.file(path.join(resource.fsPath, `index.${languageExtension}`));
+    const workspaceEdit = new vscode.WorkspaceEdit();
     workspaceEdit.createFile(fileUri);
     const aliases: string[] = [];
     let currentLine = 0;
@@ -71,7 +71,7 @@ export class CreateBarrelCommandHandler {
   }
 
   private static getLanguageExtension(files: vscode.Uri[]): Promise<string> {
-    return new Promise<string>(async (resolve, reject) => {
+    return new Promise<string>(async (resolve) => {
       const defaultLanguage: string = CreateBarrelCommandHandler.configuration.get<string>('defaultLanguage') || 'TypeScript';
       const alwaysUseDefaultLanguageExtension: boolean =
         CreateBarrelCommandHandler.configuration.get<boolean>('alwaysUseDefaultLanguage') || false;

@@ -1,4 +1,4 @@
-import * as expect from 'expect';
+import { assert } from 'chai';
 import { Substitute, Arg } from '@fluffy-spoon/substitute';
 
 import { IConfiguration } from '../../abstractions/configuration.interface';
@@ -22,12 +22,12 @@ describe('BarrelBuilder', () => {
     });
 
     it('should be defined', () => {
-        expect(target).toBeDefined();
+        assert.isDefined(target);
     });
 
     it('should implement a method to build a barrel', () => {
-        expect(typeof target.build).toBe('function');
-        expect(target.build.length).toBe(2);
+        assert.isFunction(target.build);
+        assert.equal(target.build.length, 2);
     });
 
     it('should build correct content when all files are in target folder and valid TypeScript files', async () => {
@@ -55,7 +55,7 @@ describe('BarrelBuilder', () => {
         };
 
         const actual = await target.build(rootFolder, files);
-        expect(actual).toEqual(expected); 
+        assert.deepEqual(actual, expected); 
     });
 
     it('should build correct content when all files are in target folder and valid JavaScript files', async () => {
@@ -84,7 +84,7 @@ describe('BarrelBuilder', () => {
 
         const actual = await target.build(rootFolder, files);
 
-        expect(actual).toEqual(expected); 
+        assert.deepEqual(actual, expected); 
     });
 
     it('should build correct content when all files are in target folder and valid files with mixed extensions', async () => {
@@ -114,7 +114,7 @@ describe('BarrelBuilder', () => {
 
         const actual = await target.build(rootFolder, files);
 
-        expect(actual).toEqual(expected); 
+        assert.deepEqual(actual, expected); 
     });
 
     
@@ -145,7 +145,7 @@ describe('BarrelBuilder', () => {
 
         const actual = await target.build(rootFolder, files);
 
-        expect(actual).toEqual(expected); 
+        assert.deepEqual(actual, expected); 
     });
 
     it('should build correct content when using import alias pattern', async () => {
@@ -173,7 +173,7 @@ describe('BarrelBuilder', () => {
 
         const actual = await target.build(rootFolder, files);
 
-        expect(actual).toEqual(expected); 
+        assert.deepEqual(actual, expected); 
     });
 
     it('should build correct content when file contains export default', async () => {
@@ -201,7 +201,7 @@ describe('BarrelBuilder', () => {
 
         const actual = await target.build(rootFolder, files);
 
-        expect(actual).toEqual(expected); 
+        assert.deepEqual(actual, expected); 
     });
 
     function assumeDefaultConfiguration() {

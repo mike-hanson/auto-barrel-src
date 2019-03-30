@@ -1,4 +1,4 @@
-import * as expect from 'expect';
+import { assert } from 'chai';
 import { Substitute, Arg } from '@fluffy-spoon/substitute';
 
 import { IVsCodeApi } from '../../abstractions/vs-code-api.interface';
@@ -16,87 +16,87 @@ describe('Configuration', () => {
     });
 
     it('should be defined', () => {
-        expect(target).toBeDefined();
+        assert.isDefined(target);
     });
 
     it('should return default settings for current', () => {
         assumeConfigReturnsDefaultSettings();
 
-        expect(target.current).toBe(defaultSettings);
+        assert.equal(target.current, defaultSettings);
     });
 
     it('should return correct default for defaultExtension', () => {
         assumeConfigReturnsDefaultSettings();
         
-        expect(target.defaultExtension).toBe(defaultSettings.defaultExtension);
+        assert.equal(target.defaultExtension, defaultSettings.defaultExtension);
     });
 
     it('should return correct default for alwaysUseDefaultLanguage', () => {
         assumeConfigReturnsDefaultSettings();
         
-        expect(target.alwaysUseDefaultLanguage).toBe(defaultSettings.alwaysUseDefaultLanguage);
+        assert.equal(target.alwaysUseDefaultLanguage, defaultSettings.alwaysUseDefaultLanguage);
     });
 
     it('should return correct default for watchGlob', () => {
         assumeConfigReturnsDefaultSettings();
         
-        expect(target.watchGlob).toBe(defaultSettings.watchGlob);
+        assert.equal(target.watchGlob, defaultSettings.watchGlob);
     });
 
     it('should return correct default for ingnoreFilePathContainingAnyOf', () => {
         assumeConfigReturnsDefaultSettings();
         
-        expect(target.ignoreFilePathContainingAnyOf).toBe(defaultSettings.ignoreFilePathContainingAnyOf);
+        assert.equal(target.ignoreFilePathContainingAnyOf, defaultSettings.ignoreFilePathContainingAnyOf);
     });
 
     it('should return correct default for useImportAliasExportPattern', () => {
         assumeConfigReturnsDefaultSettings();
         
-        expect(target.useImportAliasExportPattern).toBe(defaultSettings.useImportAliasExportPattern);
+        assert.equal(target.useImportAliasExportPattern, defaultSettings.useImportAliasExportPattern);
     });
 
     it('should return correct default for disableRecursiveBarrelling', () => {
         assumeConfigReturnsDefaultSettings();
         
-        expect(target.disableRecursiveBarrelling).toBe(defaultSettings.disableRecursiveBarrelling);
+        assert.equal(target.disableRecursiveBarrelling, defaultSettings.disableRecursiveBarrelling);
     });
 
     it('should return value from VS Code configuration for defaultExtension', () => {
         assumeConfigReturnsValue<string>('defaultExtension', 'js');
 
-        expect(target.defaultExtension).toBe('js');
+        assert.equal(target.defaultExtension, 'js');
     });
 
     it('should return value from VS Code configuration for alwaysUseDefaultLanguage', () => {
         assumeConfigReturnsValue<boolean>('alwaysUseDefaultLanguage', true);
 
-        expect(target.alwaysUseDefaultLanguage).toBe(true);
+        assert.equal(target.alwaysUseDefaultLanguage, true);
     });
 
     it('should return value from VS Code configuration for watchGlob', () => {
         const expected = 'somethingElse';
         assumeConfigReturnsValue<string>('watchGlob', expected);
 
-        expect(target.watchGlob).toBe(expected);
+        assert.equal(target.watchGlob, expected);
     });
 
     it('should return value from VS Code configuration for ignoreFilePathContainingAnyOf', () => {
         const expected = 'somethingElse';
         assumeConfigReturnsValue<string>('ignoreFilePathContainingAnyOf', expected);
 
-        expect(target.ignoreFilePathContainingAnyOf).toBe(expected);
+        assert.equal(target.ignoreFilePathContainingAnyOf, expected);
     });
 
     it('should return value from VS Code configuration for useImportAliasExportPattern', () => {
         assumeConfigReturnsValue<boolean>('useImportAliasExportPattern', true);
 
-        expect(target.useImportAliasExportPattern).toBe(true);
+        assert.equal(target.useImportAliasExportPattern, true);
     });
 
     it('should return value from VS Code configuration for disableRecursiveBarrelling', () => {
         assumeConfigReturnsValue<boolean>('disableRecursiveBarrelling', true);
 
-        expect(target.disableRecursiveBarrelling).toBe(true);
+        assert.equal(target.disableRecursiveBarrelling, true);
     });
 
     it('should return updated settings from configuration for current', () => {
@@ -110,7 +110,7 @@ describe('Configuration', () => {
         };
         vsCodeApiMock.getConfiguration().returns(expected);
 
-        expect(target.current).toEqual(expected);
+        assert.equal(target.current, expected);
     });
 
     function assumeConfigReturnsDefaultSettings(){
