@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import * as vscode from 'vscode';
 
 import { CreateBarrelCommandHandler } from './create-barrel-command-handler';

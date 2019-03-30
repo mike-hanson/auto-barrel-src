@@ -2,9 +2,8 @@ module.exports = (wallaby) => {
 
     return {
         files: [
-            { pattern: 'node_modules/reflect-metadata/Reflect.js', instrument: false },
-            'src/*.ts',
-            'src/abstractions/*.ts'
+            { pattern: 'src/*.ts', load: false },
+            { pattern: 'src/abstractions/*.ts', load: false }
         ],
         tests: [
             'src/test/unit/*.test.ts'
@@ -16,7 +15,6 @@ module.exports = (wallaby) => {
         compilers: {
             'src/**/*.ts': wallaby.compilers.typeScript()
         },
-        testFramework: 'jasmine',
         debug: true
     };
 }

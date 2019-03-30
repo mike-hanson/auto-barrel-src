@@ -68,7 +68,7 @@ export class Helper {
         }
       } else {
         const watchGlob = vscode.workspace.getConfiguration('autoBarrel').get<string>('watchGlob') || '**/src/**/*.{js,jsx,ts,tsx}';
-        const lastSlashIndex = watchGlob.lastIndexOf("/");
+        const lastSlashIndex = watchGlob.lastIndexOf('/');
         const searchGlobBase = lastSlashIndex === -1 ? watchGlob : watchGlob.substr(0, lastSlashIndex + 1);
         const searchGlob = `${searchGlobBase}**/index${fileExtension}`;
         const barrelFiles = await vscode.workspace.findFiles(searchGlob);

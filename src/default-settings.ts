@@ -1,4 +1,4 @@
-import { AutoBarrelSettings } from "./abstractions/auto-barrel-settings";
+import { AutoBarrelSettings } from './models/auto-barrel-settings';
 
 export const defaultSettings: AutoBarrelSettings = {
     defaultExtension: 'ts',
