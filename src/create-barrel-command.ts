@@ -10,7 +10,6 @@ export class CreateBarrelCommand {
         const filePaths = await this.vsCodeApi.findFiles(rootFolder);
         const barrelDetails = await this.barrelBuilder.build(rootFolder, filePaths);
 
-        await this.vsCodeApi.writeFile(barrelDetails.barrelFilePath, barrelDetails.contentLines);
-        return Promise.resolve();
+        return this.vsCodeApi.writeFile(barrelDetails.barrelFilePath, barrelDetails.contentLines);
     }
 }

@@ -30,59 +30,10 @@
 				"${workspaceFolder}/out/test/**/*.js"
 			],
 			"preLaunchTask": "npm: watch"
-		},
-		{
+		},{
 			"type": "node",
 			"request": "launch",
-			"name": "Dubug Unit Tests",
-			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-			"args": [
-				"--timeout",
-				"999999",
-				"--colors",
-				"--inspect-brk",
-				"--debug-brk",
-				"'${workspaceFolder}/out/test/unit/*.test.js'"
-			],
-			"console": "integratedTerminal",
-			"internalConsoleOptions": "neverOpen"
-		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "Debug Current Unit Test File",
-			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-			"args": [
-				"--timeout",
-				"999999",
-				"--colors",
-				"--inspect-brk",
-				"--debug-brk",
-				"${file}"
-			],
-			"console": "integratedTerminal",
-			"internalConsoleOptions": "neverOpen"
-		},
-		{
-            "type": "node",
-            "request": "launch",
-            "name": "Mocha Test File",
-            "cwd": "${workspaceFolder}",
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/mocha",
-            "windows": {
-                "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/mocha.cmd"
-            },
-            "runtimeArgs": [
-                "--colors",
-                "--recursive",
-                "${file}"
-            ],
-			"internalConsoleOptions": "openOnSessionStart",
-			"trace": "verbose"
-        },{
-			"type": "node",
-			"request": "launch",
-			"name": "Mocha All",
+			"name": "Debug Unit Tests",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
 			"args": [
 				"-r",
@@ -91,6 +42,22 @@
 				"999999",
 				"--colors",
 				"${workspaceFolder}/src/test/unit/**/*.test.ts",
+			],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"protocol": "inspector"
+		},{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug Current Unit Test File",
+			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+			"args": [
+				"-r",
+				"ts-node/register",
+				"--timeout",
+				"999999",
+				"--colors",
+				"${file}",
 			],
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen",

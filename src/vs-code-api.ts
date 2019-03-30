@@ -44,6 +44,7 @@ export class VsCodeApi implements IVsCodeApi {
     }
     
     public async writeFile(filePath: string, contentLines: Array<string>): Promise<void> {
+        
         return Promise.resolve();
     }
 }
