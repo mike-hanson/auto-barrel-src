@@ -1,24 +1,27 @@
 import { assert } from 'chai';
-import { Substitute, Arg } from '@fluffy-spoon/substitute';
+import { Substitute, Arg, SubstituteOf } from 'ts-substitute';
 
+import { defaultSettings } from '../../default-settings';
 import { IConfiguration } from '../../abstractions/configuration.interface';
 import { IVsCodeApi } from '../../abstractions/vs-code-api.interface';
 import { Utility } from '../../utility';
-import { BarrelBuilder } from '../../barrel-builder';
-import { defaultSettings } from '../../default-settings';
 import { BarrelDetails } from '../../models/barrel-details';
+import { ExportStatementBuilder } from '../../export-statement-builder';
+import { BarrelBuilder } from '../../barrel-builder';
 
 describe('BarrelBuilder', () => {
-    let target: BarrelBuilder;
-    let configuration: any;
-    let vsCodeApi: any;
+    let configuration: SubstituteOf<IConfiguration>;
+    let vsCodeApi: SubstituteOf<IVsCodeApi>;
     let utility: Utility;
+    let exportStatementBuilder: ExportStatementBuilder;
+    let target: BarrelBuilder;
 
     beforeEach(() => {
         configuration = Substitute.for<IConfiguration>();
         vsCodeApi = Substitute.for<IVsCodeApi>();
         utility = new Utility(configuration, vsCodeApi);
-        target = new BarrelBuilder(configuration, utility);
+        exportStatementBuilder = new ExportStatementBuilder(utility, configuration);
+        target = new BarrelBuilder(utility, exportStatementBuilder);
     });
 
     it('should be defined', () => {
@@ -115,9 +118,7 @@ describe('BarrelBuilder', () => {
         const actual = await target.build(rootFolder, files);
 
         assert.deepEqual(actual, expected); 
-    });
-
-    
+    });    
 
     it('should build correct content when some files are in sub folders', async () => {
 
@@ -179,8 +180,8 @@ describe('BarrelBuilder', () => {
     it('should build correct content when file contains export default', async () => {
 
         assumeDefaultConfiguration();
-        vsCodeApi.openTextDocument('/c:/barrel/test1.ts').returns(Promise.resolve('testing testing testing...'));
-        vsCodeApi.openTextDocument('/c:/barrel/test2.ts').returns(Promise.resolve('testing\nexport default Test2'));
+        vsCodeApi.getDocumentText('/c:/barrel/test1.ts').returnsAsync('testing testing testing...');
+        vsCodeApi.getDocumentText('/c:/barrel/test2.ts').returnsAsync('testing\nexport default Test2');
 
         const rootFolder = '/c:/barrel';
 
@@ -216,6 +217,6 @@ describe('BarrelBuilder', () => {
     }
 
     function assumeNoExportDefault() {        
-        vsCodeApi.openTextDocument(Arg.any()).returns(Promise.resolve('testing testing testing...'));
+        vsCodeApi.getDocumentText(Arg.any()).returnsAsync('testing testing testing...');
     }
 });

@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { Substitute, Arg } from '@fluffy-spoon/substitute';
+import { Substitute, SubstituteOf } from 'ts-substitute';
 
 import { IVsCodeApi } from '../../abstractions/vs-code-api.interface';
 import { defaultSettings } from '../../default-settings';
@@ -7,7 +7,7 @@ import { Configuration } from '../../configuration';
 import { AutoBarrelSettings } from '../../models/auto-barrel-settings';
 
 describe('Configuration', () => {
-    let vsCodeApiMock: any;
+    let vsCodeApiMock: SubstituteOf<IVsCodeApi>;
     let target: Configuration;
 
     beforeEach(() => {
@@ -121,7 +121,7 @@ describe('Configuration', () => {
         const baseSettings = Object.assign({}, defaultSettings);
         baseSettings[section] = value;
         
-        vsCodeApiMock.getConfiguration(Arg.all()).returns(baseSettings);
+        vsCodeApiMock.getConfiguration().returns(baseSettings);
     }
 
 });

@@ -5,6 +5,8 @@ import { Configuration } from './configuration';
 import { Utility } from './utility';
 import { BarrelBuilder } from './barrel-builder';
 import { CreateBarrelCommand } from './create-barrel-command';
+import { AutoBarreller } from './auto-barreller';
+import { ExportStatementBuilder } from './export-statement-builder';
 
 export const container = createContainer({
     injectionMode: InjectionMode.CLASSIC
@@ -15,3 +17,5 @@ container.register({configuration: asClass(Configuration).singleton()});
 container.register({utility: asClass(Utility).singleton()});
 container.register({barrelBuilder: asClass(BarrelBuilder).singleton()});
 container.register({createBarrelCommand: asClass(CreateBarrelCommand)});
+container.register({autoBarreller: asClass(AutoBarreller)});
+container.register({exportStatementBuilder: asClass(ExportStatementBuilder).singleton()});

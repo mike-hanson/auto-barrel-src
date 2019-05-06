@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import Substitute from '@fluffy-spoon/substitute';
+import { Substitute, Arg, SubstituteOf } from 'ts-substitute';
 
 import { IConfiguration } from '../../abstractions/configuration.interface';
 import { Utility } from '../../utility';
@@ -7,9 +7,9 @@ import { defaultSettings } from '../../default-settings';
 import { IVsCodeApi } from '../../abstractions/vs-code-api.interface';
 
 describe('Utility', () => {
+    let configuration: SubstituteOf<IConfiguration>;
+    let vsCodeApi: SubstituteOf<IVsCodeApi>;
     let target: Utility;
-    let configuration: any;
-    let vsCodeApi: any;
 
     beforeEach(() => {
         vsCodeApi = Substitute.for<IVsCodeApi>();
@@ -29,6 +29,11 @@ describe('Utility', () => {
     it('should implement a method to determine whether a file contains a default export', () => {
         assert.isFunction(target.containsDefaultExport);
         assert.equal(target.containsDefaultExport.length, 1);
+    });
+
+    it('should implement a method to find the closest barrel to a file', () => {
+        assert.isFunction(target.findClosestBarrel);
+        assert.equal(target.findClosestBarrel.length, 1);
     });
 
     it('should implement a method to get language extension', () => {
@@ -62,17 +67,114 @@ describe('Utility', () => {
 
     describe('containsDefaultExport', () => {
         it('should return correct result for file with default export', async () => {
-            vsCodeApi.openTextDocument('test1.ts').returns(Promise.resolve('testing \nexport default Test1'));
+            vsCodeApi.getDocumentText('test1.ts').returnsAsync('testing \nexport default Test1');
 
             const actual = await target.containsDefaultExport('test1.ts');
             assert.isTrue(actual);
         });
-        
+
         it('should return correct result for file without default export', async () => {
-            vsCodeApi.openTextDocument('test1.ts').returns(Promise.resolve('testing testing testing...'));
+            vsCodeApi.getDocumentText('test1.ts').returnsAsync('testing testing testing...');
 
             const actual = await target.containsDefaultExport('test1.ts');
             assert.isFalse(actual);
+        });
+    });
+
+    describe('findClosestBarrel', () => {
+
+        it('should look for barrels within scope of watch glob config', () => {
+            assumeDefaultConfiguration();
+
+            target.findClosestBarrel('/c:/barrel/test1.ts');
+
+            vsCodeApi.received().findFiles('src/**/index.ts');
+        });
+
+        it('should match barrel in same folder', async () => {
+            assumeDefaultConfiguration();
+
+            const matchedFiles: Array<string> = [
+                '/c:/src/barrel/index.ts',
+                '/c:/src/barrel/sub/index.ts',,
+                '/c:/src/barrel/sub/nested/index.ts',
+                '/c:/src/barrel/sub/sub/index.ts'
+            ];
+
+            vsCodeApi.findFiles(Arg.any('String')).returnsAsync(matchedFiles);
+
+            const expected: string = '/c:/src/barrel/sub/sub/index.ts';
+
+            const actual = await target.findClosestBarrel('/c:/src/barrel/sub/sub/test1.ts');
+
+            assert.equal(actual, expected);
+        });
+
+        it('should match barrel in parent folder', async () => {
+            assumeDefaultConfiguration();
+
+            const matchedFiles: Array<string> = [
+                '/c:/src/barrel/index.ts',,
+                '/c:/src/barrel/sub/nested/index.ts',
+                '/c:/src/barrel/sub/index.ts'
+            ];
+
+            vsCodeApi.findFiles(Arg.any('String')).returnsAsync(matchedFiles);
+
+            const expected: string = '/c:/src/barrel/sub/index.ts';
+
+            const actual = await target.findClosestBarrel('/c:/src/barrel/sub/sub/test1.ts');
+
+            assert.equal(actual, expected);
+        });
+
+        it('should match barrel in grand parent folder', async () => {
+            assumeDefaultConfiguration();
+
+            const matchedFiles: Array<string> = [
+                '/c:/src/barrel/index.ts',
+                '/c:/src/barrel/sub/nested/index.ts'
+            ];
+
+            vsCodeApi.findFiles(Arg.any('String')).returnsAsync(matchedFiles);
+
+            const expected: string = '/c:/src/barrel/index.ts';
+
+            const actual = await target.findClosestBarrel('/c:/src/barrel/sub/sub/test1.ts');
+
+            assert.equal(actual, expected);
+        });
+
+        it('should match barrel in same folder when recursive barrelling disaabled', async () => {
+            const config = Object.assign({}, defaultSettings);
+            config.disableRecursiveBarrelling = true;
+            configuration.current.returns(config);
+
+            const matchedFiles: Array<string> = [
+                '/c:/src/barrel/sub/sub/index.ts'
+            ];
+
+            vsCodeApi.findFiles(Arg.any('String')).returnsAsync(matchedFiles);
+
+            const expected: string =  '/c:/src/barrel/sub/sub/index.ts';
+
+            const actual = await target.findClosestBarrel('/c:/src/barrel/sub/sub/test1.ts');
+
+            assert.equal(actual, expected);
+        });
+
+        it('should return nothing when recursive barrelling disaabled and no barrel file in same folder', async () => {
+            const config = Object.assign({}, defaultSettings);
+            config.disableRecursiveBarrelling = true;
+            configuration.current.returns(config);
+
+            const matchedFiles: Array<string> = [];
+
+            vsCodeApi.findFiles(Arg.any('String')).returnsAsync(matchedFiles);
+
+                        const actual = await target.findClosestBarrel('/c:/src/barrel/sub/sub/test1.ts');
+
+            assert.equal(actual, undefined);
         });
     });
 
@@ -126,6 +228,35 @@ describe('Utility', () => {
             assert.equal(target.getLanguageExtension(filePaths), defaultSettings.defaultExtension);
         });
 
+    });
+
+    describe('getLanguageExtensionFromFile', () => {
+        it('should return correct extension when file .ts extension', () => {
+            assumeDefaultConfiguration();
+
+            const filePath = '\C:\\barrel\\test1.ts';
+
+            assert.equal(target.getLanguageExtensionFromFile(filePath), 'ts');
+        });
+
+        it('should return correct extension when file has .js extension', () => {
+            assumeDefaultConfiguration();
+
+            const filePath = '\C:\\barrel\\test1.js';
+
+            assert.equal(target.getLanguageExtensionFromFile(filePath), 'js');
+        });
+
+        it('should return default extension if configured to always use default', () => {
+            const config = Object.assign({}, defaultSettings);
+            config.alwaysUseDefaultLanguage = true;
+            configuration.current.returns(config);
+
+          
+            const filePath = '\C:\\barrel\\test1.ts';
+
+            assert.equal(target.getLanguageExtensionFromFile(filePath), config.defaultExtension);
+        });
     });
 
     describe('pathContainsIgnoredFragment', () => {

@@ -1,18 +1,15 @@
-import * as path from 'path';
-
-import { IBarrelBuilder } from './abstractions/barrel-builder.interface';
-import { Configuration } from './configuration';
-import { Utility } from './utility';
 import { BarrelDetails } from './models/barrel-details';
+import { IUtility } from './abstractions/utlity.interface';
+import { IBarrelBuilder } from './abstractions/barrel-builder.interface';
+import { IExportStatementBuilder } from './abstractions/export-statement-builder.interface';
 
 export class BarrelBuilder implements IBarrelBuilder {
 
-    constructor(private configuration: Configuration,
-        private utility: Utility) {
+    constructor(private utility: IUtility,
+        private exportStatementBuilder: IExportStatementBuilder) {
     }
 
     public async build(rootFolderPath: string, filePaths: Array<string>): Promise<BarrelDetails> {
-        const config = this.configuration.current;
         const languageExtension = this.utility.getLanguageExtension(filePaths);
         const aliases: Array<string> = [];
         const result = new Array<string>();
@@ -24,24 +21,14 @@ export class BarrelBuilder implements IBarrelBuilder {
                 continue;
             }
 
-            const fileExtension = path.extname(filePath);
-            const fileName = path.basename(filePath, fileExtension);
-            const fileRelativePath = path.relative(rootFolderPath, filePath).replace(/\\/g, '/').replace(fileExtension, '');
-            if (config.useImportAliasExportPattern) {
-                const alias = this.utility.buildAlias(filePath);
-                aliases.push(alias);
-                result.push(`import * as ${alias} from './${fileRelativePath}';`);
-            } else {
-                const containsDefaultExport = await this.utility.containsDefaultExport(filePath);
-                if (containsDefaultExport === true) {
-                    result.push(`export { default as ${fileName} } from './${fileRelativePath}';`)
-                } else {
-                    result.push(`export * from './${fileRelativePath}';`);
-                }
+            const statementDetails = await this.exportStatementBuilder.build(rootFolderPath, filePath);
+            result.push(statementDetails.statement);
+            if(statementDetails.alias){
+                aliases.push(statementDetails.alias);
             }
         }
 
-        if (config.useImportAliasExportPattern) {
+        if (aliases.length) {
             result.push(`export { ${aliases.join(', ')} };`);
         }
 

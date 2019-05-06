@@ -43,7 +43,7 @@
         },
         "autoBarrel.watchGlob": {
           "type": "string",
-          "default": "**/src/**/*.{js,jsx,ts,tsx}",
+          "default": "src/**/*.{js,jsx,ts,tsx}",
           "description": "Glob pattern for files to be watched when auto barrel is started"
         },
         "autoBarrel.ignoreFilePathContainingAnyOf": {
