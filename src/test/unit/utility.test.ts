@@ -63,6 +63,10 @@ describe('Utility', () => {
         it('should return correct alias for file name with multiple dot seprated parts', () => {
             assert.equal(target.buildAlias('my.name.ext'), 'MyName');
         });
+
+        it('should return correct alias for barrel file in nested folder', () => {
+            assert.equal(target.buildAlias('src/sub1/sub2/index.ts'), 'Sub2');
+        });
     });
 
     describe('containsDefaultExport', () => {

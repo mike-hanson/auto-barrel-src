@@ -15,10 +15,19 @@ export function activate(context: vscode.ExtensionContext) {
     (uri: vscode.Uri) => createBarrelCommandHandler.execute(uri.path)
   );
 
+  const createBarrelAtCommand = vscode.commands.registerCommand('autoBarrel.createBarrelAt', async () => {
+    const folderPath = await vscode.window.showInputBox({
+      prompt: 'Enter Folder Path'
+    });
+    const uri = vscode.Uri.parse(folderPath);
+    return createBarrelCommandHandler.execute(uri.path);
+  })
+
   const startCommand = vscode.commands.registerCommand('autoBarrel.start', autoBarreller.start);
   const stopCommand = vscode.commands.registerCommand('autoBarrel.stop', autoBarreller.stop);
 
   context.subscriptions.push(createBarrelCommand);
+  context.subscriptions.push(createBarrelAtCommand);
   context.subscriptions.push(startCommand);
   context.subscriptions.push(stopCommand);
 }

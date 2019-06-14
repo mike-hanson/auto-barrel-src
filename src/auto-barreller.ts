@@ -14,7 +14,7 @@ export class AutoBarreller implements IDisposable {
         private utility: IUtility,
         private exportStatementBuilder: IExportStatementBuilder) { }
 
-    public async start(): Promise<void> {
+    public start = async (): Promise<void> => {
         if (this.isRunning()) {
             await this.vsCodeApi.showWarningMessage('Auto Barrel is already running.');
             return;
@@ -23,6 +23,7 @@ export class AutoBarreller implements IDisposable {
         try {
             const configuration = this.configuration.current;
             this.fileSystemWatcher = this.vsCodeApi.createFileSystemWatcher(configuration.watchGlob, this.handleFileCreated, this.handleFileDeleted);
+            await this.vsCodeApi.showInformationMessage('Auto Barrel was started successfully.');
             return Promise.resolve();
         } catch (err) {
             console.log(err);
@@ -30,7 +31,7 @@ export class AutoBarreller implements IDisposable {
         }
     }
 
-    public async stop(): Promise<void> {
+    public stop = async (): Promise<void> => {
         if (this.isRunning() === false) {
             await this.vsCodeApi.showWarningMessage('Auto Barrel is not running, no action taken.');
             return;
@@ -40,18 +41,15 @@ export class AutoBarreller implements IDisposable {
         return Promise.resolve();
     }
 
-    public dispose() {
+    public dispose = () => {
         this.fileSystemWatcher.dispose();
         this.fileSystemWatcher = undefined;
     }
 
 
-    public async handleFileCreated(filePath: string): Promise<void> {
+    public handleFileCreated = async (filePath: string): Promise<void> => {
         try {
-            const extension = path.extname(filePath);
-            const fileNameWithoutExtension = path.basename(filePath, extension);
-
-            if (fileNameWithoutExtension.toLocaleLowerCase() === 'index' || this.utility.pathContainsIgnoredFragment(filePath) === true) {
+            if (this.utility.pathContainsIgnoredFragment(filePath) === true) {
                 return Promise.resolve();
             }
 
@@ -74,7 +72,7 @@ export class AutoBarreller implements IDisposable {
         }
     }
 
-    public async handleFileDeleted(filePath: string): Promise<void> {
+    public handleFileDeleted = async (filePath: string): Promise<void> => {
         try {
             const barrelFilePath = await this.utility.findClosestBarrel(filePath);
             if (typeof barrelFilePath === 'undefined') {
@@ -82,8 +80,10 @@ export class AutoBarreller implements IDisposable {
             }
 
             const barrelFolderPath = path.dirname(barrelFilePath);
-            const statementDetails = await this.exportStatementBuilder.build(barrelFolderPath, filePath);
-            return this.vsCodeApi.removeStatementFromBarrel(barrelFilePath, statementDetails);
+            const fileExtension = path.extname(filePath);
+            const fileRelativePath = path.relative(barrelFolderPath, filePath).replace(/\\/g, '/').replace(fileExtension, '');
+            const statementSuffix = `from './${fileRelativePath}'`;
+            return this.vsCodeApi.removeStatementFromBarrel(barrelFilePath, statementSuffix);
 
         } catch (error) {
             console.log(error);

@@ -2,6 +2,7 @@ import { BarrelDetails } from './models/barrel-details';
 import { IUtility } from './abstractions/utlity.interface';
 import { IBarrelBuilder } from './abstractions/barrel-builder.interface';
 import { IExportStatementBuilder } from './abstractions/export-statement-builder.interface';
+import { StatementDetails } from './models/statement-details';
 
 export class BarrelBuilder implements IBarrelBuilder {
 
@@ -22,9 +23,11 @@ export class BarrelBuilder implements IBarrelBuilder {
             }
 
             const statementDetails = await this.exportStatementBuilder.build(rootFolderPath, filePath);
-            result.push(statementDetails.statement);
-            if(statementDetails.alias){
-                aliases.push(statementDetails.alias);
+            if (!barrelForFileHasBeenImported(statementDetails)) {
+                result.push(statementDetails.statement);
+                if (statementDetails.alias) {
+                    aliases.push(statementDetails.alias);
+                }
             }
         }
 
@@ -36,5 +39,19 @@ export class BarrelBuilder implements IBarrelBuilder {
             barrelFilePath: `${rootFolderPath}/index.${languageExtension}`,
             contentLines: result
         };
+
+        function barrelForFileHasBeenImported(statementDetails: StatementDetails) {
+            if(statementDetails.isBarrelImport) {
+                return false;
+            }
+
+            const statement = statementDetails.statement;
+            const start = statement.indexOf('from');
+            const length = statement.lastIndexOf('/') - start;
+            const barrelImportSuffix = `${statement.substr(start, length)}'`;
+            
+            const barrelImport = result.find((s) => s.indexOf(barrelImportSuffix) !== -1);
+            return typeof barrelImport !== 'undefined';
+        }
     }
 }

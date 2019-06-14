@@ -16,9 +16,10 @@ export class VsCodeApi implements IVsCodeApi {
             }
         }
 
-        const lastLineWithContent = document.lineCount;
+        let lastLineWithContent = document.lineCount  - 1;
         for (let i = lastLineWithContent; i > 0; i--) {
             if(document.lineAt(i).text.length) {
+                lastLineWithContent = i;
                 break;
             }
         }
@@ -33,6 +34,16 @@ export class VsCodeApi implements IVsCodeApi {
             workspaceEdit.insert(barrelFileUri, newLinePosition, newAliasStatement);
         } else {
             workspaceEdit.insert(barrelFileUri, newLinePosition, statementDetails.statement);
+        }
+
+        if(statementDetails.isBarrelImport) {
+            const barrelStatementPrefix = statementDetails.statement.substr(0, statementDetails.statement.length - 2);
+            for (let i = 0; i < document.lineCount; i++) {
+                const line = document.lineAt(i);
+                if(line.text.indexOf(barrelStatementPrefix) !== -1) {
+                    workspaceEdit.delete(barrelFileUri, line.rangeIncludingLineBreak);
+                }              
+            }
         }
 
         const result = await vscode.workspace.applyEdit(workspaceEdit);
@@ -51,9 +62,12 @@ export class VsCodeApi implements IVsCodeApi {
     }
 
     public createFileSystemWatcher(globPattern: string, onCreated: (path: string) => void, onDelete: (path: string) => void): IDisposable {
-        const result = vscode.workspace.createFileSystemWatcher(globPattern, false, true, false);
+        const relativeGlobPattern = new vscode.RelativePattern(vscode.workspace.rootPath, globPattern);
+        const result = vscode.workspace.createFileSystemWatcher(relativeGlobPattern, false, true, false);
 
-        result.onDidCreate((uri: vscode.Uri) => onCreated(uri.path));
+        result.onDidCreate((uri: vscode.Uri) => {
+            onCreated(uri.path);
+        });
         result.onDidDelete((uri: vscode.Uri) => onDelete(uri.path));
 
         return result;
@@ -102,16 +116,16 @@ export class VsCodeApi implements IVsCodeApi {
         return document.getText();
     }
     
-    public async removeStatementFromBarrel(barrelFilePath: string, statementDetails: StatementDetails): Promise<void> {
+    public async removeStatementFromBarrel(barrelFilePath: string, statementSuffix: string): Promise<void> {
         const document = await this.openTextDocument(barrelFilePath);
 
         let lineToRemove: vscode.TextLine;
         let aliasLine: vscode.TextLine;
 
-        for(let i = 1; i <= document.lineCount; i++) {
+        for(let i = 0; i < document.lineCount; i++) {
             const documentLine = document.lineAt(i);
             const lineText = documentLine.text;
-            if(lineText.indexOf(statementDetails.statement) !== -1) {
+            if(lineText.indexOf(statementSuffix) !== -1) {
                 lineToRemove = documentLine;
             }
 
@@ -121,22 +135,23 @@ export class VsCodeApi implements IVsCodeApi {
         }
 
         if(typeof lineToRemove === 'undefined') {
-            await vscode.window.showWarningMessage(`Could not find ${statementDetails.statement} in ${barrelFilePath}`);
+            await vscode.window.showWarningMessage(`Could not find ${statementSuffix} in ${barrelFilePath}`);
             return;
         }
 
         const barrelFileUri = vscode.Uri.file(barrelFilePath);
         const workspaceEdit = new vscode.WorkspaceEdit();
         
-        if(statementDetails.alias) {
+        if(lineToRemove.text.indexOf('import * as ') !== -1) {
             if(typeof aliasLine === 'undefined') {
                 await vscode.window.showWarningMessage(`Could not find alias statement in ${barrelFilePath}`);
                 return;
             }
-            const newAliasText = aliasLine.text.replace(`, ${statementDetails.alias}`, '');
+            const alias = lineToRemove.text.split(' ')[3];
+            const newAliasText = aliasLine.text.replace(`, ${alias}`, '');
             workspaceEdit.replace(barrelFileUri, aliasLine.range, newAliasText);
         }
-        workspaceEdit.delete(barrelFileUri, lineToRemove.range);        
+        workspaceEdit.delete(barrelFileUri, lineToRemove.rangeIncludingLineBreak);        
 
         const result = await vscode.workspace.applyEdit(workspaceEdit);
         if (result) {

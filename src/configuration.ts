@@ -1,9 +1,9 @@
 import { IConfiguration } from './abstractions/configuration.interface';
-import { VsCodeApi } from './vs-code-api';
+import { IVsCodeApi } from './abstractions/vs-code-api.interface';
 import { AutoBarrelSettings } from './models/auto-barrel-settings';
 
 export class Configuration implements IConfiguration {
-    constructor(private vsCodeApi: VsCodeApi) {
+    constructor(private vsCodeApi: IVsCodeApi) {
     }
 
     public get current(): AutoBarrelSettings {

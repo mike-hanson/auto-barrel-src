@@ -14,6 +14,7 @@
   ],
   "activationEvents": [
     "onCommand:autoBarrel.createBarrel",
+    "onCommand:autoBarrel.createBarrelAt",
     "onCommand:autoBarrel.start",
     "onCommand:autoBarrel.stop"
   ],
@@ -69,6 +70,10 @@
         "title": "Create Barrel"
       },
       {
+        "command": "autoBarrel.createBarrelAt",
+        "title": "Auto Barrel - Create Barrel"
+      },
+      {
         "command": "autoBarrel.start",
         "title": "Auto Barrel - Start"
       },
@@ -84,6 +89,9 @@
         },
         {
           "command": "autoBarrel.stop"
+        },
+        {
+          "command": "autoBarrel.createBarrelAt"
         }
       ],
       "explorer/context": [

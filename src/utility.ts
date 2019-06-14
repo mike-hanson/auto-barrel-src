@@ -12,11 +12,18 @@ export class Utility implements IUtility {
     }
 
     public buildAlias(filePath: string): string {
-        const actualFileName = path.basename(filePath, path.extname(filePath));
+        const baseName = path.basename(filePath, path.extname(filePath));
         const aliasParts: string[] = [];
+        let nameParts: string[];
+        if(baseName.toLowerCase() === 'index') {
+            const pathParts = filePath.split('/');
+            const aliasBase = pathParts[pathParts.length - 2];
+            nameParts = [aliasBase];
+        } else {
+            nameParts  = baseName.split('.');
+        }
 
-        const fileNameParts = actualFileName.split('.');
-        for (const part of fileNameParts) {
+        for (const part of nameParts) {
             const partElements = part.split('-');
             for (const element of partElements) {
                 aliasParts.push(element.charAt(0).toUpperCase() + element.slice(1));
@@ -51,6 +58,9 @@ export class Utility implements IUtility {
             const barrelFiles = await this.vsCodeApi.findFiles(searchGlob);
             if (barrelFiles.length > 0) {
                let folder = this.getParentFolder(filePath);
+               if(path.basename(filePath, fileExtension)  === 'index') {
+                   folder = this.getParentFolder(folder);
+               }
                let barrelPath = `${folder}/${barrelFileName}`;
                let match = barrelFiles.find((f) => f === barrelPath);
                 while(!match){

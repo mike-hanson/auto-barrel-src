@@ -9,7 +9,7 @@ export interface IVsCodeApi {
     findSupportedFiles(folderPath: string): Promise<Array<string>>;
     getConfiguration(): AutoBarrelSettings;
     getDocumentText(filePath: string): Promise<string>;
-    removeStatementFromBarrel(barrelFilePath: string, statementDetails: StatementDetails): Promise<void>;
+    removeStatementFromBarrel(barrelFilePath: string, statementSuffix: string): Promise<void>;
     showInformationMessage(message: string): Promise<string>;
     showErrorMessage(message: string): Promise<string>;
     showWarningMessage(message: string): Promise<string>;

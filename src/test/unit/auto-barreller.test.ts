@@ -20,7 +20,8 @@ describe('AutoBarreller', () => {
 
     const statementDetails: StatementDetails = {
         alias: undefined,
-        statement: 'export this'
+        statement: 'export this',
+        isBarrelImport: false
     };
 
     beforeEach(() => {
@@ -108,15 +109,6 @@ describe('AutoBarreller', () => {
 
     describe('handleFileCreated', () => {
         
-        it('should do nothing if file is barrel', async () => {
-            assumeDefaultConfiguration();
-
-            const createdFilePath = '/c:/src/barrel/sub/index.ts';
-            await target.handleFileCreated(createdFilePath);
-
-            utility.didNotReceive().findClosestBarrel(createdFilePath);
-        });
-
         it('should do nothing if file excluded via config', async () => {
             assumeDefaultConfiguration();
             
@@ -213,17 +205,6 @@ describe('AutoBarreller', () => {
 
             utility.received().findClosestBarrel(deletedFilePath);
         });
-
-        it('should build statement', async () => {
-            assumeDefaultConfiguration();
-            assumeBarrelFileIsFound();
-            assumeStatementBuilderReturnsResult();
-            
-            const deletedFilePath = '/c:/src/barrel/sub/test1.ts';
-            await target.handleFileCreated(deletedFilePath);
-
-            exportStatementBuilder.received().build(defaultBarrelFolder, deletedFilePath);
-        }); 
         
         it('should delegate to vs code api to remove statement from barrel', async () => {
             assumeDefaultConfiguration();
@@ -233,7 +214,7 @@ describe('AutoBarreller', () => {
             const deletedFilePath = '/c:/src/barrel/sub/test1.ts';
             await target.handleFileDeleted(deletedFilePath);
 
-            vsCodeApi.received().removeStatementFromBarrel(defaultBarrelFilePath, statementDetails);
+            vsCodeApi.received().removeStatementFromBarrel(defaultBarrelFilePath, 'from \'./sub/test1\'');
         });
     });
 
