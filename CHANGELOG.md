@@ -91,7 +91,18 @@ Support for managing files in sub folders when Auto Barrel - Start is active
 Setting to disable sub folder features for both commands
 
 ### Known Issues
-With sub folder support enabled some index.* files may be incorrectly recognised as barrel files making it necessary to add and exclusion for the file.
+With sub folder support enabled some index.* files may be incorrectly recognised as barrel files making it necessary to add an exclusion for the file.
+
+## [1.5.0]
+
+### Added
+Support for recognising nested barrel files and importing the containing folder rather than the contents
+
+### Changed
+A lot of re-factoring to use dependency injection and make things more testable as it is no longer the simple extension created to suit own purposes
+
+### Known issues
+Occasionally the formatting of a barrel file is not perfect when a nested barrel file is imported and previous individual file imports are removed
 
 
 

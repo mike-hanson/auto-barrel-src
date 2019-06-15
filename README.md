@@ -16,7 +16,9 @@ You can also prevent Auto Barrel from treating existing index.[tj]s files as bar
 
 ### Recursive Barelling
 
-As of v1.4.0 Auto Barrel supports including files in sub folders in a barrel file.  When Auto Barrel - Start is active and this feature is enabled (it is enabled by default) Auto Barrel walks up the folder tree to find the nearest ancestor index.[jt]s file to manage.  This can lead to a file with the name index.* being incorrectly identified as a barrel.  If this happens the file will need to be excluded using either the setting or an appropriate comment as described below. 
+As of v1.4.0 Auto Barrel supports including files in sub folders in a barrel file.  When Auto Barrel - Start is active and this feature is enabled (it is enabled by default) Auto Barrel walks up the folder tree to find the nearest ancestor index.[jt]s file to manage.  This can lead to a file with the name index.* being incorrectly identified as a barrel.  If this happens the file will need to be excluded using either the setting or an appropriate comment as described below.
+
+As of v1.5.0 Auto Barrel recognises barrel files in nested folders and imports the folder rather than individual files in the folder.  However this requires recursive barrelling to be enabled.
 
 ## Extension Settings
 
