@@ -93,7 +93,7 @@ Setting to disable sub folder features for both commands
 ### Known Issues
 With sub folder support enabled some index.* files may be incorrectly recognised as barrel files making it necessary to add an exclusion for the file.
 
-## [1.5.0]
+## [1.5.0] 2019-06-15
 
 ### Added
 Support for recognising nested barrel files and importing the containing folder rather than the contents
@@ -104,5 +104,12 @@ A lot of re-factoring to use dependency injection and make things more testable 
 ### Known issues
 Occasionally the formatting of a barrel file is not perfect when a nested barrel file is imported and previous individual file imports are removed
 
+## [1.5.1] 2019-06-17
+
+### Changed
+Introduced bundling with web pack to reduce files in package and improve loading speed
+
+### Fixed
+Ordering issue when creating new barrel introduced in last change
 
 
