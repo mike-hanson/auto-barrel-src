@@ -14,6 +14,7 @@ export class BarrelBuilder implements IBarrelBuilder {
         const languageExtension = this.utility.getLanguageExtension(filePaths);
         const aliases: Array<string> = [];
         const result = new Array<string>();
+        const exportStatements = new Array<StatementDetails>();
 
         for (let i = 0; i < filePaths.length; i++) {
             const filePath = filePaths[i];
@@ -22,11 +23,16 @@ export class BarrelBuilder implements IBarrelBuilder {
                 continue;
             }
 
-            const statementDetails = await this.exportStatementBuilder.build(rootFolderPath, filePath);
-            if (!barrelForFileHasBeenImported(statementDetails)) {
-                result.push(statementDetails.statement);
-                if (statementDetails.alias) {
-                    aliases.push(statementDetails.alias);
+            const exportStatement = await this.exportStatementBuilder.build(rootFolderPath, filePath);
+            exportStatements.push(exportStatement);
+        }
+
+        for(let i = 0; i < exportStatements.length; i++) {
+           const exportStatement = exportStatements[i];
+            if (!barrelForStatementIsIncluded(exportStatement)) {
+                result.push(exportStatement.statement);
+                if (exportStatement.alias) {
+                    aliases.push(exportStatement.alias);
                 }
             }
         }
@@ -40,7 +46,7 @@ export class BarrelBuilder implements IBarrelBuilder {
             contentLines: result
         };
 
-        function barrelForFileHasBeenImported(statementDetails: StatementDetails) {
+        function barrelForStatementIsIncluded(statementDetails: StatementDetails) {
             if(statementDetails.isBarrelImport) {
                 return false;
             }
@@ -50,7 +56,7 @@ export class BarrelBuilder implements IBarrelBuilder {
             const length = statement.lastIndexOf('/') - start;
             const barrelImportSuffix = `${statement.substr(start, length)}'`;
             
-            const barrelImport = result.find((s) => s.indexOf(barrelImportSuffix) !== -1);
+            const barrelImport = exportStatements.find((s) => s.statement.indexOf(barrelImportSuffix) !== -1);
             return typeof barrelImport !== 'undefined';
         }
     }
