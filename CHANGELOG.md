@@ -112,4 +112,9 @@ Introduced bundling with web pack to reduce files in package and improve loading
 ### Fixed
 Ordering issue when creating new barrel introduced in last change
 
+## [1.5.2] 2019-06-20
+
+### Fixed
+Reverted webpack bundling changes as this caused issues after updating.
+
 
