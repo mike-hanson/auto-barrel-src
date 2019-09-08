@@ -15,7 +15,7 @@
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: watch"
+			"preLaunchTask": "npm: test-compile"
 		},
 		{
 			"name": "Extension Tests",
@@ -24,14 +24,15 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"${workspaceFolder}/testworkspace",
+				"--disable-extensions",
 				"--extensionDevelopmentPath=${workspaceFolder}",
 				"--extensionTestsPath=${workspaceFolder}/out/test/integration"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/test/integration/**/*.js"
 			],
-			"preLaunchTask": "npm: watch"
-		},{
+			"preLaunchTask": "npm: test-compile"
+		}, {
 			"type": "node",
 			"request": "launch",
 			"name": "Debug Unit Tests",
@@ -47,7 +48,7 @@
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen",
 			"protocol": "inspector"
-		},{
+		}, {
 			"type": "node",
 			"request": "launch",
 			"name": "Debug Current Unit Test File",

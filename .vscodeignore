@@ -1,10 +1,13 @@
+.nyc-output/
 .vscode/**
 .vscode-test/**
-src/**
+coverage/
+testtarget/
 .gitignore
-vsc-extension-quickstart.md
 **/tsconfig.json
 **/tslint.json
-**/*.map
-**/*.ts
+node_modules
+out/
+src/
+webpack.config.js
 wallaby.js

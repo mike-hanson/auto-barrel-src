@@ -7,203 +7,211 @@ import { defaultSettings } from './default-settings';
 import { StatementDetails } from './models/statement-details';
 
 export class VsCodeApi implements IVsCodeApi {
-
-    public async appendStatementToBarrel(barrelFilePath: string, statementDetails: StatementDetails): Promise<void> {
-        const document = await this.openTextDocument(barrelFilePath);
-        if (document.lineCount >= 1) {
-            if (document.lineAt(0).text.indexOf('auto-barrel-ignore') !== -1) {
-                return;
-            }
-        }
-
-        let lastLineWithContent = document.lineCount  - 1;
-        for (let i = lastLineWithContent; i > 0; i--) {
-            if(document.lineAt(i).text.length) {
-                lastLineWithContent = i;
-                break;
-            }
-        }
-        const newLinePosition = new vscode.Position(lastLineWithContent + 1, 0);
-        const barrelFileUri = vscode.Uri.file(barrelFilePath);
-        const workspaceEdit = new vscode.WorkspaceEdit();
-        if (statementDetails.alias) {
-            const aliasLine = document.lineAt(lastLineWithContent);
-            const originalAliasStatement = aliasLine.text;
-            const newAliasStatement = originalAliasStatement.replace(' };', `, ${statementDetails.alias} };`);
-            workspaceEdit.replace(barrelFileUri, aliasLine.range, statementDetails.statement);
-            workspaceEdit.insert(barrelFileUri, newLinePosition, newAliasStatement);
-        } else {
-            workspaceEdit.insert(barrelFileUri, newLinePosition, statementDetails.statement);
-        }
-
-        if(statementDetails.isBarrelImport) {
-            const barrelStatementPrefix = statementDetails.statement.substr(0, statementDetails.statement.length - 2);
-            for (let i = 0; i < document.lineCount; i++) {
-                const line = document.lineAt(i);
-                if(line.text.indexOf(barrelStatementPrefix) !== -1) {
-                    workspaceEdit.delete(barrelFileUri, line.rangeIncludingLineBreak);
-                }              
-            }
-        }
-
-        const result = await vscode.workspace.applyEdit(workspaceEdit);
-        if (result) {
-          await vscode.window.showInformationMessage(`The new file was added to ${barrelFilePath}`, {
-            modal: false
-          });
-
-        } else {
-          await vscode.window.showWarningMessage(`Unable to add the new file to ${barrelFilePath}`, {
-            modal: false
-          });
-        }
-
+  public async appendStatementToBarrel(barrelFilePath: string, statementDetails: StatementDetails): Promise<void> {
+    const document = await this.openTextDocument(barrelFilePath);
+    if (document.lineCount >= 1) {
+      if (document.lineAt(0).text.indexOf('auto-barrel-ignore') !== -1) {
         return;
+      }
     }
 
-    public createFileSystemWatcher(globPattern: string, onCreated: (path: string) => void, onDelete: (path: string) => void): IDisposable {
-        const relativeGlobPattern = new vscode.RelativePattern(vscode.workspace.rootPath, globPattern);
-        const result = vscode.workspace.createFileSystemWatcher(relativeGlobPattern, false, true, false);
-
-        result.onDidCreate((uri: vscode.Uri) => {
-            onCreated(uri.path);
-        });
-        result.onDidDelete((uri: vscode.Uri) => onDelete(uri.path));
-
-        return result;
+    let lastLineWithContent = document.lineCount - 1;
+    for (let i = lastLineWithContent; i > 0; i--) {
+      if (document.lineAt(i).text.length) {
+        lastLineWithContent = i;
+        break;
+      }
+    }
+    const newLinePosition = new vscode.Position(lastLineWithContent + 1, 0);
+    const barrelFileUri = vscode.Uri.file(barrelFilePath);
+    const workspaceEdit = new vscode.WorkspaceEdit();
+    if (statementDetails.alias) {
+      const aliasLine = document.lineAt(lastLineWithContent);
+      const originalAliasStatement = aliasLine.text;
+      const newAliasStatement = originalAliasStatement.replace(' };', `, ${statementDetails.alias} };`);
+      workspaceEdit.replace(barrelFileUri, aliasLine.range, statementDetails.statement);
+      workspaceEdit.insert(barrelFileUri, newLinePosition, newAliasStatement);
+    } else {
+      workspaceEdit.insert(barrelFileUri, newLinePosition, statementDetails.statement);
     }
 
-    public async findSupportedFiles(folderPath: string): Promise<Array<string>> {
-        const files = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.{js,jsx,ts,tsx}'));
-        return files.map(f => f.path);
+    if (statementDetails.isBarrelImport) {
+      const barrelStatementPrefix = statementDetails.statement.substr(0, statementDetails.statement.length - 2);
+      for (let i = 0; i < document.lineCount; i++) {
+        const line = document.lineAt(i);
+        if (line.text.indexOf(barrelStatementPrefix) !== -1) {
+          workspaceEdit.delete(barrelFileUri, line.rangeIncludingLineBreak);
+        }
+      }
     }
 
-    public async findFiles(searchGlob: string): Promise<Array<string>> {
-        const files = await vscode.workspace.findFiles(searchGlob);
-        return files.map(f => f.path);
+    const result = await vscode.workspace.applyEdit(workspaceEdit);
+    if (result) {
+      await vscode.window.showInformationMessage(`The new file was added to ${barrelFilePath}`, {
+        modal: false
+      });
+    } else {
+      await vscode.window.showWarningMessage(`Unable to add the new file to ${barrelFilePath}`, {
+        modal: false
+      });
     }
 
-    public getConfiguration(): AutoBarrelSettings {
-        const config = vscode.workspace.getConfiguration('autoBarrel');
-        if (typeof config === 'undefined') {
-            return defaultSettings;
-        }
+    return;
+  }
 
-        const defaultLanguage = config.get<string>('defaultLanguage');
-        const defaultExtension = defaultLanguage === 'JavaScript' ? 'js' : 'ts';
+  public createFileSystemWatcher(
+    globPattern: string,
+    onCreated: (path: string) => void,
+    onDelete: (path: string) => void
+  ): IDisposable {
+    const relativeGlobPattern = new vscode.RelativePattern(vscode.workspace.rootPath, globPattern);
+    const result = vscode.workspace.createFileSystemWatcher(relativeGlobPattern, false, true, false);
 
-        return {
-            defaultExtension: defaultExtension,
-            alwaysUseDefaultLanguage: getSettingOrDefault<boolean>(config, 'alwaysUseDefaultLanguage'),
-            watchGlob: getSettingOrDefault<string>(config, 'watchGlob'),
-            ignoreFilePathContainingAnyOf: getSettingOrDefault<string>(config, 'ignoreFilePathContainingAnyOf'),
-            useImportAliasExportPattern: getSettingOrDefault<boolean>(config, 'useImportAliasExportPattern'),
-            disableRecursiveBarrelling: getSettingOrDefault<boolean>(config, 'disableRecursiveBarrelling')
-        };
+    result.onDidCreate((uri: vscode.Uri) => {
+      onCreated(uri.path);
+    });
+    result.onDidDelete((uri: vscode.Uri) => onDelete(uri.path));
 
-        function getSettingOrDefault<T extends string | boolean>(config: vscode.WorkspaceConfiguration, section: string): T {
-            const configSetting = config.get<T>(section);
-            if (typeof configSetting !== 'undefined') {
-                return configSetting as T;
-            }
-            return defaultSettings[section] as T;
-        }
+    return result;
+  }
+
+  public async findSupportedFiles(folderPath: string): Promise<Array<string>> {
+    const files = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.{js,jsx,ts,tsx}'));
+    return files.map(f => f.path);
+  }
+
+  public async findFiles(searchGlob: string): Promise<Array<string>> {
+    const files = await vscode.workspace.findFiles(searchGlob);
+    return files.map(f => f.path);
+  }
+
+  public getConfiguration(): AutoBarrelSettings {
+    const config = vscode.workspace.getConfiguration('autoBarrel');
+    if (typeof config === 'undefined') {
+      return defaultSettings;
     }
 
-    public async getDocumentText(filePath: string): Promise<string> {
-        const uri = vscode.Uri.file(filePath);
-        const document = await vscode.workspace.openTextDocument(uri);
-        return document.getText();
+    const defaultLanguage = config.get<string>('defaultLanguage');
+    const defaultExtension = defaultLanguage === 'JavaScript' ? 'js' : 'ts';
+
+    return {
+      defaultExtension: defaultExtension,
+      alwaysUseDefaultLanguage: getSettingOrDefault<boolean>(config, 'alwaysUseDefaultLanguage'),
+      watchGlob: getSettingOrDefault<string>(config, 'watchGlob'),
+      ignoreFilePathContainingAnyOf: getSettingOrDefault<string>(config, 'ignoreFilePathContainingAnyOf'),
+      useImportAliasExportPattern: getSettingOrDefault<boolean>(config, 'useImportAliasExportPattern'),
+      disableRecursiveBarrelling: getSettingOrDefault<boolean>(config, 'disableRecursiveBarrelling')
+    };
+
+    function getSettingOrDefault<T extends string | boolean>(
+      config: vscode.WorkspaceConfiguration,
+      section: string
+    ): T {
+      const configSetting = config.get<T>(section);
+      if (typeof configSetting !== 'undefined') {
+        return configSetting as T;
+      }
+      return defaultSettings[section] as T;
     }
-    
-    public async removeStatementFromBarrel(barrelFilePath: string, statementSuffix: string): Promise<void> {
-        const document = await this.openTextDocument(barrelFilePath);
+  }
 
-        let lineToRemove: vscode.TextLine;
-        let aliasLine: vscode.TextLine;
+  public async getDocumentText(filePath: string): Promise<string> {
+    const uri = vscode.Uri.file(filePath);
+    const document = await vscode.workspace.openTextDocument(uri);
+    return document.getText();
+  }
 
-        for(let i = 0; i < document.lineCount; i++) {
-            const documentLine = document.lineAt(i);
-            const lineText = documentLine.text;
-            if(lineText.indexOf(statementSuffix) !== -1) {
-                lineToRemove = documentLine;
-            }
+  public async removeStatementFromBarrel(barrelFilePath: string, statementSuffix: string): Promise<void> {
+    const document = await this.openTextDocument(barrelFilePath);
 
-            if(lineText.indexOf('export { ') !== -1) {
-                aliasLine = documentLine;
-            }
-        }
+    let lineToRemove: vscode.TextLine;
+    let aliasLine: vscode.TextLine;
 
-        if(typeof lineToRemove === 'undefined') {
-            await vscode.window.showWarningMessage(`Could not find ${statementSuffix} in ${barrelFilePath}`);
-            return;
-        }
+    for (let i = 0; i < document.lineCount; i++) {
+      const documentLine = document.lineAt(i);
+      const lineText = documentLine.text;
+      if (lineText.indexOf(statementSuffix) !== -1) {
+        lineToRemove = documentLine;
+      }
 
-        const barrelFileUri = vscode.Uri.file(barrelFilePath);
-        const workspaceEdit = new vscode.WorkspaceEdit();
-        
-        if(lineToRemove.text.indexOf('import * as ') !== -1) {
-            if(typeof aliasLine === 'undefined') {
-                await vscode.window.showWarningMessage(`Could not find alias statement in ${barrelFilePath}`);
-                return;
-            }
-            const alias = lineToRemove.text.split(' ')[3];
-            const newAliasText = aliasLine.text.replace(`, ${alias}`, '');
-            workspaceEdit.replace(barrelFileUri, aliasLine.range, newAliasText);
-        }
-        workspaceEdit.delete(barrelFileUri, lineToRemove.rangeIncludingLineBreak);        
+      if (lineText.indexOf('export { ') !== -1) {
+        aliasLine = documentLine;
+      }
+    }
 
-        const result = await vscode.workspace.applyEdit(workspaceEdit);
-        if (result) {
-          await vscode.window.showInformationMessage(`The file was removed from ${barrelFilePath}`, {
-            modal: false
-          });
+    if (typeof lineToRemove === 'undefined') {
+      await vscode.window.showWarningMessage(`Could not find ${statementSuffix} in ${barrelFilePath}`);
+      return;
+    }
 
-        } else {
-          await vscode.window.showWarningMessage(`Unable to remove the file from ${barrelFilePath}`, {
-            modal: false
-          });
-        }
+    const barrelFileUri = vscode.Uri.file(barrelFilePath);
+    const workspaceEdit = new vscode.WorkspaceEdit();
 
+    if (lineToRemove.text.indexOf('import * as ') !== -1) {
+      if (typeof aliasLine === 'undefined') {
+        await vscode.window.showWarningMessage(`Could not find alias statement in ${barrelFilePath}`);
         return;
+      }
+      const alias = lineToRemove.text.split(' ')[3];
+      const newAliasText = aliasLine.text.replace(`, ${alias}`, '');
+      workspaceEdit.replace(barrelFileUri, aliasLine.range, newAliasText);
+    }
+    workspaceEdit.delete(barrelFileUri, lineToRemove.rangeIncludingLineBreak);
+
+    const result = await vscode.workspace.applyEdit(workspaceEdit);
+    if (result) {
+      await vscode.window.showInformationMessage(`The file was removed from ${barrelFilePath}`, {
+        modal: false
+      });
+    } else {
+      await vscode.window.showWarningMessage(`Unable to remove the file from ${barrelFilePath}`, {
+        modal: false
+      });
     }
 
-    public async showInformationMessage(message: string): Promise<string> {
-        return vscode.window.showInformationMessage(message);
+    return;
+  }
+
+  public async showInformationMessage(message: string): Promise<string> {
+    return vscode.window.showInformationMessage(message);
+  }
+
+  public async showErrorMessage(message: string): Promise<string> {
+    return vscode.window.showErrorMessage(message);
+  }
+
+  public async showWarningMessage(message: string): Promise<string> {
+    return vscode.window.showWarningMessage(message);
+  }
+
+  public async writeFile(
+    filePath: string,
+    contentLines: Array<string>,
+    overWriteIfExists: boolean = false
+  ): Promise<void> {
+    const fileUri = vscode.Uri.file(filePath);
+    const workspaceEdit = new vscode.WorkspaceEdit();
+    workspaceEdit.createFile(fileUri, { overwrite: overWriteIfExists });
+
+    for (let i = 0; i < contentLines.length; i++) {
+      const line = contentLines[i];
+      workspaceEdit.insert(fileUri, new vscode.Position(i, 0), `${line}\n`);
     }
 
-    public async showErrorMessage(message: string): Promise<string> {
-        return vscode.window.showErrorMessage(message);
+    try {
+      const result = await vscode.workspace.applyEdit(workspaceEdit);
+      if (result === true) {
+        await vscode.window.showInformationMessage(`Barrel ${filePath} was created successfully`);
+      } else {
+        await vscode.window.showWarningMessage('The barrel file was not created as expected');
+      }
+    } catch (error) {
+      await vscode.window.showErrorMessage(`Creating barrel file failed:  ${error}`);
     }
+  }
 
-    public async showWarningMessage(message: string): Promise<string> {
-        return vscode.window.showWarningMessage(message);
-    }
-
-    public async writeFile(filePath: string, contentLines: Array<string>): Promise<void> {
-        const fileUri = vscode.Uri.file(filePath);
-        const workspaceEdit = new vscode.WorkspaceEdit();
-        workspaceEdit.createFile(fileUri);
-
-        for (let i = 0; i < contentLines.length; i++) {
-            const line = contentLines[i];
-            workspaceEdit.insert(fileUri, new vscode.Position(i, 0), `${line}\n`);
-        }
-
-        try {
-            const result = await vscode.workspace.applyEdit(workspaceEdit);
-            if (result === true) {
-                await vscode.window.showInformationMessage(`Barrel ${filePath} was created successfully`);
-            } else {
-                await vscode.window.showWarningMessage('The barrel file was not created as expected');
-            }
-        } catch (error) {
-            await vscode.window.showErrorMessage(`Creating barrel file failed:  ${error}`);
-        }
-    }
-
-    private async openTextDocument(filePath: string): Promise<vscode.TextDocument> {
-        const uri = vscode.Uri.file(filePath);
-        return vscode.workspace.openTextDocument(uri);
-    }
+  private async openTextDocument(filePath: string): Promise<vscode.TextDocument> {
+    const uri = vscode.Uri.file(filePath);
+    return vscode.workspace.openTextDocument(uri);
+  }
 }

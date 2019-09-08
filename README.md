@@ -1,6 +1,6 @@
 # Auto Barrel
 
-Auto Barrel adds support for creating a barrel (index.[tj]s) in a folder and optionally keeping it up to date automatically.
+Auto Barrel adds support for creating a barrel (index.[tj]s[x]) in a folder and optionally keeping it up to date automatically.
 
 ![install and work](images/auto-barrel.gif)
 
@@ -12,13 +12,15 @@ Auto Barrel - Start - From the command pallete execute this command to have Auto
 
 Auto Barrel - Stop - From the command pallete execute this command to stop automatic management of barrel files.
 
-You can also prevent Auto Barrel from treating existing index.[tj]s files as barrels by adding a comment to the file
+Update Barrel - Righ click on a barrel file in Exporer viewlet and this command allows you to update the barrel to include new files added manually. Perfect if you forget to start Auto Barrel before adding new files.
+
+You can also prevent Auto Barrel from treating existing index.[tj]s[x] files as barrels by adding a comment to the file
 
 ### Recursive Barelling
 
-As of v1.4.0 Auto Barrel supports including files in sub folders in a barrel file.  When Auto Barrel - Start is active and this feature is enabled (it is enabled by default) Auto Barrel walks up the folder tree to find the nearest ancestor index.[jt]s file to manage.  This can lead to a file with the name index.* being incorrectly identified as a barrel.  If this happens the file will need to be excluded using either the setting or an appropriate comment as described below.
+As of v1.4.0 Auto Barrel supports including files in sub folders in a barrel file. When Auto Barrel - Start is active and this feature is enabled (it is enabled by default) Auto Barrel walks up the folder tree to find the nearest ancestor index.[jt]s file to manage. This can lead to a file with the name index.\* being incorrectly identified as a barrel. If this happens the file will need to be excluded using either the setting or an appropriate comment as described below.
 
-As of v1.5.0 Auto Barrel recognises barrel files in nested folders and imports the folder rather than individual files in the folder.  However this requires recursive barrelling to be enabled.
+As of v1.5.0 Auto Barrel recognises barrel files in nested folders and imports the folder rather than individual files in the folder. However this requires recursive barrelling to be enabled.
 
 ## Extension Settings
 
@@ -56,17 +58,21 @@ The setting is used to prevent files where the full path contains any of the fra
 'autoBarrel.useImportAliasExportPattern';
 ```
 
-This defaults to false.  If this is set to true then instead of simply exporting files included in the barral like this
+This defaults to false. If this is set to true then instead of simply exporting files included in the barral like this
+
 ```javascript
 export * from './auth.actions';
 ```
+
 We import the file with an alias derived from the name and export the alias something like this
+
 ```javascript
 import * as AuthActions from './auth.actions';
 
 export { AuthActions };
 ```
-The alias uses both dots and hyphens as word separators to build the alias.  A file name like **login-page.actions** will result in an alias of **LoginPageActions**
+
+The alias uses both dots and hyphens as word separators to build the alias. A file name like **login-page.actions** will result in an alias of **LoginPageActions**
 
 ```javascript
 'autoBarrel.disableRecursiveBarrelling';
@@ -74,7 +80,7 @@ The alias uses both dots and hyphens as word separators to build the alias.  A f
 
 This defaults to false.
 
-If this is set to true then files in sub folders below the barrel file will not be included when using the Create Barrel command.  Also when the Auto Barrel - Start command is active only barrel files in the same folder as a new or deleted file will be affected, Auto Barrel will not walk up the folder tree looking for a barrel file.
+If this is set to true then files in sub folders below the barrel file will not be included when using the Create Barrel command. Also when the Auto Barrel - Start command is active only barrel files in the same folder as a new or deleted file will be affected, Auto Barrel will not walk up the folder tree looking for a barrel file.
 
 ## Ignoring Potential Barrel Files
 

@@ -3,10 +3,11 @@ import { Substitute, Arg, SubstituteOf } from '@testpossessed/ts-substitute';
 
 import { IVsCodeApi } from '../../abstractions/vs-code-api.interface';
 import { IBarrelBuilder } from '../../abstractions/barrel-builder.interface';
-import { CreateBarrelCommand } from '../../create-barrel-command';
+import { UpdateBarrelCommand } from '../../update-barrel-command';
 
-describe('CreateBarrelCommand', () => {
+describe('UpdateBarrelCommand', () => {
   const rootFolder = '/c:/barrel';
+  const barrelFilePath = rootFolder + '/index.ts';
   const files: Array<string> = ['/c:/barrel/test1.ts', '/c:/barrel/test2.ts', '/c:/barrel/test3.ts'];
   // tslint:disable: quotemark
   const contentLines: Array<string> = [
@@ -19,12 +20,12 @@ describe('CreateBarrelCommand', () => {
 
   let vsCodeApi: SubstituteOf<IVsCodeApi>;
   let barrelBuilder: SubstituteOf<IBarrelBuilder>;
-  let target: CreateBarrelCommand;
+  let target: UpdateBarrelCommand;
 
   beforeEach(() => {
     vsCodeApi = Substitute.for<IVsCodeApi>();
     barrelBuilder = Substitute.for<IBarrelBuilder>();
-    target = new CreateBarrelCommand(vsCodeApi, barrelBuilder);
+    target = new UpdateBarrelCommand(vsCodeApi, barrelBuilder);
   });
 
   it('should be defined', () => {
@@ -41,7 +42,7 @@ describe('CreateBarrelCommand', () => {
     assumeBarrelBuildReturnsResult();
     assumeWriteFileReturnsResult();
 
-    await target.execute(rootFolder);
+    await target.execute(barrelFilePath);
 
     vsCodeApi.received().findSupportedFiles(rootFolder);
   });
@@ -51,7 +52,7 @@ describe('CreateBarrelCommand', () => {
     assumeBarrelBuildReturnsResult();
     assumeWriteFileReturnsResult();
 
-    await target.execute(rootFolder);
+    await target.execute(barrelFilePath);
 
     barrelBuilder.received(1).build(rootFolder, files);
   });
@@ -61,9 +62,9 @@ describe('CreateBarrelCommand', () => {
     assumeBarrelBuildReturnsResult();
     assumeWriteFileReturnsResult();
 
-    await target.execute(rootFolder);
+    await target.execute(barrelFilePath);
 
-    vsCodeApi.received().writeFile(barrelDetails.barrelFilePath, barrelDetails.contentLines);
+    vsCodeApi.received().writeFile(barrelDetails.barrelFilePath, barrelDetails.contentLines, true);
   });
 
   function assumeVsCodeApiFindsFiles() {

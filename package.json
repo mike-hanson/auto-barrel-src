@@ -1,8 +1,8 @@
 {
   "name": "auto-barrel",
   "displayName": "Auto Barrel",
-  "description": "Provides a command to create a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
-  "version": "1.5.3",
+  "description": "Provides commands to create or update a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
+  "version": "1.6.0",
   "publisher": "mikehanson",
   "repository": "https://github.com/testpossessed/auto-barrel",
   "icon": "images/icon.png",
@@ -14,10 +14,11 @@
   ],
   "activationEvents": [
     "onCommand:autoBarrel.createBarrel",
+    "onCommand:autoBarrel.updateBarrel",
     "onCommand:autoBarrel.start",
     "onCommand:autoBarrel.stop"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
       "type": "object",
@@ -63,10 +64,13 @@
         }
       }
     },
-    "commands": [
-      {
+    "commands": [{
         "command": "autoBarrel.createBarrel",
         "title": "Create Barrel"
+      },
+      {
+        "command": "autoBarrel.updateBarrel",
+        "title": "Update Barrel"
       },
       {
         "command": "autoBarrel.start",
@@ -78,42 +82,49 @@
       }
     ],
     "menus": {
-      "commandPalette": [
-        {
+      "commandPalette": [{
           "command": "autoBarrel.start"
         },
         {
           "command": "autoBarrel.stop"
         }
       ],
-      "explorer/context": [
-        {
+      "explorer/context": [{
           "command": "autoBarrel.createBarrel",
           "when": "explorerViewletFocus && explorerResourceIsFolder"
+        },
+        {
+          "command": "autoBarrel.updateBarrel",
+          "when": "resourceFilename == index.ts || resourceFilename == index.js || resourceFilename == index.tsx || resourceFilename == index.jsx"
         }
       ]
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    "package": "npx vsce package",
+    "publish": "npx vsce publish",
+    "vscode:prepublish": "webpack --mode production",
+    "compile": "webpack --mode none",
+    "watch": "webpack --mode none --watch",
+    "postinstall": "node node_modules/vscode/bin/install",
+    "just-test": "node node_modules/vscode/bin/test",
+    "test-compile": "tsc -p ./ && npm run compile",
+    "test": "npm run test-compile && node node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.7",
+    "@testpossessed/ts-substitute": "^1.0.0",
+    "@types/chai": "^4.2.1",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^2.2.48",
-    "@types/node": "^8.10.49",
+    "@types/node": "^8.10.53",
     "chai": "^4.2.0",
-    "ts-loader": "^6.0.3",
+    "ts-loader": "^6.0.4",
     "ts-node": "^8.3.0",
-    "tslint": "^5.17.0",
-    "typescript": "^3.5.2",
-    "vscode": "^1.1.34",
-    "webpack": "^4.35.0",
-    "webpack-cli": "^3.3.4"
+    "tslint": "^5.19.0",
+    "typescript": "^3.6.2",
+    "vscode": "^1.1.36",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8"
   },
   "dependencies": {
     "awilix": "^4.2.2"
