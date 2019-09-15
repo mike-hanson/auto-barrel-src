@@ -2,12 +2,9 @@
 .vscode/**
 .vscode-test/**
 coverage/
-testtarget/
 .gitignore
 **/tsconfig.json
 **/tslint.json
-node_modules
-out/
 src/
 webpack.config.js
 wallaby.js
