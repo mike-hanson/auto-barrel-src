@@ -15,6 +15,6 @@ export class UpdateBarrelCommand {
     }
     const barrelDetails = await this.barrelBuilder.build(rootFolder, filePaths);
 
-    return await this.vsCodeApi.writeFile(barrelDetails.barrelFilePath, barrelDetails.contentLines, true);
+    return await this.vsCodeApi.overwriteFileContent(barrelDetails.barrelFilePath, barrelDetails.contentLines);
   }
 }

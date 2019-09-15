@@ -13,6 +13,7 @@ export interface IVsCodeApi {
   findSupportedFiles(folderPath: string): Promise<Array<string>>;
   getConfiguration(): AutoBarrelSettings;
   getDocumentText(filePath: string): Promise<string>;
+  overwriteFileContent(filePath: string, contentLines: Array<string>): Promise<void>;
   removeStatementFromBarrel(barrelFilePath: string, statementSuffix: string): Promise<void>;
   showInformationMessage(message: string): Promise<string>;
   showErrorMessage(message: string): Promise<string>;

@@ -210,6 +210,39 @@ export class VsCodeApi implements IVsCodeApi {
     }
   }
 
+  public async overwriteFileContent(filePath: string, contentLines: Array<string>) {
+    const document = await this.openTextDocument(filePath);
+    const fileUri = vscode.Uri.file(filePath);
+    const workspaceEdit = new vscode.WorkspaceEdit();
+
+    for (let i = 0; i < contentLines.length; i++) {
+      const contentLine = contentLines[i];
+      if (i < document.lineCount) {
+        workspaceEdit.replace(fileUri, document.lineAt(i).rangeIncludingLineBreak, `${contentLine}\n`);
+      } else {
+        workspaceEdit.insert(fileUri, new vscode.Position(i, 0), `${contentLine}\n`);
+      }
+    }
+
+    if (document.lineCount > contentLines.length) {
+      for (let i = contentLines.length; i < document.lineCount; i++) {
+        const lineRange = document.lineAt(i).rangeIncludingLineBreak;
+        workspaceEdit.delete(fileUri, lineRange);
+      }
+    }
+
+    try {
+      const result = await vscode.workspace.applyEdit(workspaceEdit);
+      if (result === true) {
+        await vscode.window.showInformationMessage(`Barrel ${filePath} was updated successfully`);
+      } else {
+        await vscode.window.showWarningMessage('The barrel file was not updated as expected');
+      }
+    } catch (error) {
+      await vscode.window.showErrorMessage(`Updating barrel failed:  ${error}`);
+    }
+  }
+
   private async openTextDocument(filePath: string): Promise<vscode.TextDocument> {
     const uri = vscode.Uri.file(filePath);
     return vscode.workspace.openTextDocument(uri);

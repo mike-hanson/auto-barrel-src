@@ -6,6 +6,16 @@ Based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.6.3] 2019-09-15
+
+Updated engines setting to ensure compatability with recent changes
+
+## [1.6.2] 2019-09-10
+
+### Fixed
+
+An issue with new Update Barrel command where it would not update file if it was active editor with changes
+
 ## [1.6.0] 2019-09-08
 
 ### Added

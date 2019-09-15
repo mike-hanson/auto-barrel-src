@@ -40,7 +40,7 @@ describe('UpdateBarrelCommand', () => {
   it('should fetch files via vs code api', async () => {
     assumeVsCodeApiFindsFiles();
     assumeBarrelBuildReturnsResult();
-    assumeWriteFileReturnsResult();
+    assumeOverWriteFileReturnsResult();
 
     await target.execute(barrelFilePath);
 
@@ -50,7 +50,7 @@ describe('UpdateBarrelCommand', () => {
   it('should delegate to barrel builder to get content for barrel', async () => {
     assumeVsCodeApiFindsFiles();
     assumeBarrelBuildReturnsResult();
-    assumeWriteFileReturnsResult();
+    assumeOverWriteFileReturnsResult();
 
     await target.execute(barrelFilePath);
 
@@ -60,11 +60,11 @@ describe('UpdateBarrelCommand', () => {
   it('should delegate to vs code api to write barrel file', async () => {
     assumeVsCodeApiFindsFiles();
     assumeBarrelBuildReturnsResult();
-    assumeWriteFileReturnsResult();
+    assumeOverWriteFileReturnsResult();
 
     await target.execute(barrelFilePath);
 
-    vsCodeApi.received().writeFile(barrelDetails.barrelFilePath, barrelDetails.contentLines, true);
+    vsCodeApi.received().overwriteFileContent(barrelDetails.barrelFilePath, barrelDetails.contentLines);
   });
 
   function assumeVsCodeApiFindsFiles() {
@@ -75,7 +75,7 @@ describe('UpdateBarrelCommand', () => {
     barrelBuilder.build(Arg.any(), Arg.any()).returnsAsync(barrelDetails);
   }
 
-  function assumeWriteFileReturnsResult() {
-    vsCodeApi.writeFile(Arg.any(), Arg.any()).returnsAsync(undefined);
+  function assumeOverWriteFileReturnsResult() {
+    vsCodeApi.overwriteFileContent(Arg.any(), Arg.any()).returnsAsync(undefined);
   }
 });
