@@ -40,46 +40,62 @@ export class Utility implements IUtility {
 
     public async findClosestBarrel(filePath: string): Promise<string> {
         const config = this.configuration.current;
-        const fileExtension = path.extname(filePath).substr(0, 3);
-        const barrelFileName = `index${fileExtension}`;
-
-        if (config.disableRecursiveBarrelling) {
-            const folderPath = path.dirname(filePath);
-            const barrelFilePath = `${folderPath}/${barrelFileName}`;
-            const barrelFiles = await this.vsCodeApi.findFiles(barrelFilePath);
-            if(barrelFiles.length > 0) {
-                return barrelFiles[0];
+        let fileExtension = path.extname(filePath);
+        if(fileExtension.toLowerCase() === '.vue') {
+            // need to switch extension, possibly twice to search for barrel file
+            let searchPath = filePath.replace('.vue', '.js');
+            let barrelFilePath = await this.findClosestBarrel(searchPath);
+            if(typeof barrelFilePath === 'undefined') {
+                searchPath = filePath.replace('.vue', '.ts');
+                return await this.findClosestBarrel(searchPath);
+            } else {
+                return barrelFilePath;
             }
         } else {
-            const watchGlob = config.watchGlob;
-            const lastSlashIndex = watchGlob.lastIndexOf('/');
-            const searchGlobBase = lastSlashIndex === -1 ? watchGlob : watchGlob.substr(0, lastSlashIndex + 1);
-            const searchGlob = `${searchGlobBase}${barrelFileName}`;
-            const barrelFiles = await this.vsCodeApi.findFiles(searchGlob);
-            if (barrelFiles.length > 0) {
-               let folder = this.getParentFolder(filePath);
-               if(path.basename(filePath, fileExtension)  === 'index') {
-                   folder = this.getParentFolder(folder);
-               }
-               let barrelPath = `${folder}/${barrelFileName}`;
-               let match = barrelFiles.find((f) => f === barrelPath);
-                while(!match){
-                    folder = this.getParentFolder(folder);
-                    barrelPath = `${folder}/${barrelFileName}`;
-                    match = barrelFiles.find((f) => f === barrelPath);
+            fileExtension = fileExtension.substr(0, 3);
+
+            const barrelFileName = `index${fileExtension}`;
+
+            if (config.disableRecursiveBarrelling) {
+                const folderPath = path.dirname(filePath);
+                const barrelFilePath = `${folderPath}/${barrelFileName}`;
+                const barrelFiles = await this.vsCodeApi.findFiles(barrelFilePath);
+                if(barrelFiles.length > 0) {
+                    return barrelFiles[0];
                 }
-                return match;
+            } else {
+                const watchGlob = config.watchGlob;
+                const lastSlashIndex = watchGlob.lastIndexOf('/');
+                const searchGlobBase = lastSlashIndex === -1 ? watchGlob : watchGlob.substr(0, lastSlashIndex + 1);
+                const searchGlob = `${searchGlobBase}${barrelFileName}`;
+                const barrelFiles = await this.vsCodeApi.findFiles(searchGlob);
+                if (barrelFiles.length > 0) {
+                let folder = this.getParentFolder(filePath);
+                if(path.basename(filePath, fileExtension)  === 'index') {
+                    folder = this.getParentFolder(folder);
+                }
+                let barrelPath = `${folder}/${barrelFileName}`;
+                let match = barrelFiles.find((f) => f === barrelPath);
+                    while(!match){
+                        folder = this.getParentFolder(folder);
+                        barrelPath = `${folder}/${barrelFileName}`;
+                        match = barrelFiles.find((f) => f === barrelPath);
+                    }
+                    return match;
+                }
             }
+            
+            return undefined;
         }
-        return undefined;
     }
 
     public getLanguageExtension(filePaths: Array<string>): 'ts' | 'js' {
         const currentConfig = this.configuration.current;
         if (currentConfig.alwaysUseDefaultLanguage === false) {
-            if (filePaths.every(f => f.endsWith('.ts') || f.endsWith('.tsx'))) {
+            const filePathsExcludingVue = filePaths.filter(p => path.extname(p) !== '.vue');
+            if (filePathsExcludingVue.every(f => f.endsWith('.ts') || f.endsWith('.tsx'))) {
                 return 'ts';
-            } else if (filePaths.every(f => f.endsWith('.js') || f.endsWith('.jsx'))) {
+            } else if (filePathsExcludingVue.every(f => f.endsWith('.js') || f.endsWith('.jsx'))) {
                 return 'js';
             }
         }

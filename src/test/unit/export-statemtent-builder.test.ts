@@ -129,6 +129,21 @@ describe('ExportStatementBuilder', () => {
     assert.deepEqual(actual, expected);
   });
 
+  it('should build correct statement for vue file when no default and not using import alias pattern', async () => {
+    assumeDefaultConfiguration();
+    utility.containsDefaultExport(Arg.any()).returnsAsync(false);
+    const expected: StatementDetails = {
+      // tslint:disable-next-line: quotemark
+      statement: "export * from './test1.vue';",
+      alias: undefined,
+      isBarrelImport: false
+    };
+
+    const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/test1.vue');
+
+    assert.deepEqual(actual, expected);
+  });
+
   function assumeDefaultConfiguration() {
     configuration.current.returns(defaultSettings);
   }

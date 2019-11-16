@@ -76,7 +76,7 @@ export class VsCodeApi implements IVsCodeApi {
   }
 
   public async findSupportedFiles(folderPath: string): Promise<Array<string>> {
-    const files = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.{js,jsx,ts,tsx}'));
+    const files = await vscode.workspace.findFiles(new vscode.RelativePattern(folderPath, '**/*.{js,jsx,ts,tsx,vue}'));
     return files.map(f => f.path);
   }
 

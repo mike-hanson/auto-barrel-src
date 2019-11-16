@@ -81,7 +81,10 @@ export class AutoBarreller implements IDisposable {
 
             const barrelFolderPath = path.dirname(barrelFilePath);
             const fileExtension = path.extname(filePath);
-            const fileRelativePath = path.relative(barrelFolderPath, filePath).replace(/\\/g, '/').replace(fileExtension, '');
+            let fileRelativePath = path.relative(barrelFolderPath, filePath).replace(/\\/g, '/');
+            if(fileExtension.toLowerCase() !== '.vue') {
+                fileRelativePath = fileRelativePath.replace(fileExtension, '');
+            }
             const statementSuffix = `from './${fileRelativePath}'`;
             return this.vsCodeApi.removeStatementFromBarrel(barrelFilePath, statementSuffix);
 

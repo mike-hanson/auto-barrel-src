@@ -1,12 +1,12 @@
 # Auto Barrel
 
-Auto Barrel adds support for creating a barrel (index.[tj]s[x]) in a folder and optionally keeping it up to date automatically.
+Auto Barrel adds support for creating a barrel (index.[tj]s) in a folder and optionally keeping it up to date automatically.
 
 ![install and work](images/auto-barrel.gif)
 
 ## Features
 
-Create Barrel - Right click on any folder in Explorer viewlet and this command allows you to create a new barrel with export statements for all other files of the same language.
+Create Barrel - Right click on any folder in Explorer viewlet and this command allows you to create a new barrel with export statements for all other modules of the same language or Vue.js modules.
 
 Auto Barrel - Start - From the command pallete execute this command to have Auto Barrel automatically add and delete export statements as files are added or deleted from the folder.
 
@@ -14,7 +14,7 @@ Auto Barrel - Stop - From the command pallete execute this command to stop autom
 
 Update Barrel - Righ click on a barrel file in Exporer viewlet and this command allows you to update the barrel to include new files added manually. Perfect if you forget to start Auto Barrel before adding new files.
 
-You can also prevent Auto Barrel from treating existing index.[tj]s[x] files as barrels by adding a comment to the file
+You can also prevent Auto Barrel from treating existing index.[tj]s files as barrels by adding a comment to the file
 
 ### Recursive Barelling
 
@@ -42,7 +42,7 @@ This defaults to false. If this is set to true then the Create Barrel command wi
 'autoBarrel.watchGlob';
 ```
 
-This defaults to _\*\*\/src\/\*\*\/\*.[tj]s_. When the Auto Barrel - Start command is executed from the Command Pallette this setting is used to configure a File System Watcher to monitor file creation and deletion using this setting. Since the most common convention is to put source files in a src folder below a workspace root Auto Barrel uses a default that will watch for creation or deletion of .ts and .js files in any folder below any src folder. If you use a different convention or want to limit to either .ts or .js files you can change the glob.
+This defaults to a glob that includes TypesScript, JavaScript, React and Vue files. When the Auto Barrel - Start command is executed from the Command Pallette this setting is used to configure a File System Watcher to monitor file creation and deletion using this setting. Since the most common convention is to put source files in a src folder below a workspace root Auto Barrel uses a default that will watch for creation or deletion of files in any folder below any src folder. If you use a different convention or want to limit the files that are watched you can change the glob.
 
 For example to ignore .js files change it to _\*\*\/src\/\*\*\/_.ts* or to ignore .ts files change it to *\*\*\/src\/\*\*\/_.ts_
 

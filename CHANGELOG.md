@@ -6,8 +6,14 @@ Based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.7.0] 2019-11-15
+
+### Added
+Support for including .vue files in barrels. Barrel files themselves still have either .ts or .js.
+
 ## [1.6.3] 2019-09-15
 
+### Changed
 Updated engines setting to ensure compatability with recent changes
 
 ## [1.6.2] 2019-09-10

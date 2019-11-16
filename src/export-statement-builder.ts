@@ -19,7 +19,10 @@ export class ExportStatementBuilder implements IExportStatementBuilder {
 
         const fileExtension = path.extname(filePath);
         let baseName = path.basename(filePath, fileExtension);
-        let importRelativePath = path.relative(rootFolderPath, filePath).replace(/\\/g, '/').replace(fileExtension, '');
+        let importRelativePath = path.relative(rootFolderPath, filePath).replace(/\\/g, '/');
+        if(fileExtension.toLowerCase() !== '.vue') {
+            importRelativePath = importRelativePath.replace(fileExtension, '');
+        }
         if(baseName.toLowerCase() === 'index') {
             importRelativePath = importRelativePath.replace('/index', '');
             baseName = importRelativePath.substr(baseName.lastIndexOf('/') + 1);
