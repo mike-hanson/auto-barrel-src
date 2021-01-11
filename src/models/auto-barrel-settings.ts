@@ -6,4 +6,5 @@ export interface AutoBarrelSettings {
     ignoreFilePathContainingAnyOf: string;
     useImportAliasExportPattern: boolean;
     disableRecursiveBarrelling: boolean;
+    excludeSemiColonAtEndOfLine: boolean;
 }

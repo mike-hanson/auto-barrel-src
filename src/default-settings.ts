@@ -6,5 +6,6 @@ export const defaultSettings: AutoBarrelSettings = {
     watchGlob: 'src/**/*.{js,jsx,ts,tsx,vue}',
     ignoreFilePathContainingAnyOf: '.spec,.test',
     useImportAliasExportPattern: false,
-    disableRecursiveBarrelling: false
+    disableRecursiveBarrelling: false,
+    excludeSemiColonAtEndOfLine: false
 };

@@ -33,4 +33,8 @@ export class Configuration implements IConfiguration {
     public get disableRecursiveBarrelling(): boolean {
         return this.current.disableRecursiveBarrelling;
     }
+
+    public get excludeSemiColonAtEndOfLine(): boolean {
+        return this.current.excludeSemiColonAtEndOfLine;
+    }
 }

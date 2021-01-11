@@ -143,8 +143,28 @@ describe('ExportStatementBuilder', () => {
 
     assert.deepEqual(actual, expected);
   });
+  it('should build correct statement when exclude semi colon at end of line setting enabled', async () => {
+   
+    configuration.current.returns({
+      ...defaultSettings,
+      excludeSemiColonAtEndOfLine: true
+    });
+    
+    utility.containsDefaultExport(Arg.any()).returnsAsync(false);
+    const expected: StatementDetails = {
+      // tslint:disable-next-line: quotemark
+      statement: "export * from './test1'",
+      alias: undefined,
+      isBarrelImport: false
+    };
+
+    const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/test1.vue');
+
+    assert.deepEqual(actual, expected);
+  });
 
   function assumeDefaultConfiguration() {
     configuration.current.returns(defaultSettings);
   }
+
 });

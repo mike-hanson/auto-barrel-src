@@ -82,6 +82,14 @@ This defaults to false.
 
 If this is set to true then files in sub folders below the barrel file will not be included when using the Create Barrel command. Also when the Auto Barrel - Start command is active only barrel files in the same folder as a new or deleted file will be affected, Auto Barrel will not walk up the folder tree looking for a barrel file.
 
+```javascript
+'autoBarrel.excludeSemiColonAtEndOfLine';
+```
+
+This defaults to false.
+
+If enabled then semi colons will not be included at the end of statements generated in barrel files.
+
 ## Ignoring Potential Barrel Files
 
 If your workspace/s contain existing index.ts or index.js files that are matched by the autoBarrel.watchGlob pattern, but they are not barrel files you can tell Auto Barrel to ignore them during automatic monitoring by adding the following comment as the first line of the file.

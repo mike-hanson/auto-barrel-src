@@ -8,4 +8,5 @@ export interface IConfiguration {
     readonly ignoreFilePathContainingAnyOf: string;
     readonly useImportAliasExportPattern: boolean;
     readonly disableRecursiveBarrelling: boolean;
+    readonly excludeSemiColonAtEndOfLine: boolean;
 }

@@ -6,6 +6,11 @@ Based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.8.0] 2021-01-11
+
+### Added
+Support for excluding semi colons at end of generated statements through a new setting excludeSemiColonAtEndOfLine
+
 ## [1.7.1] 2019-11-19
 
 ### Fixed

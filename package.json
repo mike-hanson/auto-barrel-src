@@ -61,6 +61,11 @@
           "type": "boolean",
           "default": false,
           "description": "Indicates whether support for including files in sub folders in a barrel is disabled"
+        },
+        "autoBarrel.excludeSemiColonAtEndOfLine": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether semi colons should NOT be added to end of generated lines"
         }
       }
     },

@@ -106,7 +106,8 @@ describe('Configuration', () => {
       watchGlob: 'watchGlob',
       ignoreFilePathContainingAnyOf: 'ignore',
       useImportAliasExportPattern: true,
-      disableRecursiveBarrelling: true
+      disableRecursiveBarrelling: true,
+      excludeSemiColonAtEndOfLine: false
     };
     vsCodeApiMock.getConfiguration().returns(expected);
 

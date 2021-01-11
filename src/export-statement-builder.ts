@@ -28,15 +28,17 @@ export class ExportStatementBuilder implements IExportStatementBuilder {
       baseName = importRelativePath.substr(baseName.lastIndexOf('/') + 1);
       result.isBarrelImport = true;
     }
+    const lineEnd = config.excludeSemiColonAtEndOfLine? '': ';';
+
     if (config.useImportAliasExportPattern) {
       result.alias = this.utility.buildAlias(filePath);
-      result.statement = `import * as ${result.alias} from './${importRelativePath}';`;
+      result.statement = `import * as ${result.alias} from './${importRelativePath}'${lineEnd}`;
     } else {
       const containsDefaultExport = await this.utility.containsDefaultExport(filePath);
       if (containsDefaultExport === true) {
-        result.statement = `export { default as ${baseName} } from './${importRelativePath}';`;
+        result.statement = `export { default as ${baseName} } from './${importRelativePath}'${lineEnd}`;
       } else {
-        result.statement = `export * from './${importRelativePath}';`;
+        result.statement = `export * from './${importRelativePath}'${lineEnd}`;
       }
     }
 
