@@ -134,7 +134,7 @@ describe('ExportStatementBuilder', () => {
     utility.containsDefaultExport(Arg.any()).returnsAsync(false);
     const expected: StatementDetails = {
       // tslint:disable-next-line: quotemark
-      statement: "export * from './test1.vue';",
+      statement: "export * from './test1';",
       alias: undefined,
       isBarrelImport: false
     };

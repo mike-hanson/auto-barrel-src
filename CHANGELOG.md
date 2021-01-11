@@ -6,6 +6,11 @@ Based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.7.1] 2019-11-19
+
+### Fixed
+Issue with initial implementation of Vue support where it included the extension
+
 ## [1.7.0] 2019-11-15
 
 ### Added
