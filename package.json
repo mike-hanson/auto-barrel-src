@@ -69,7 +69,8 @@
         }
       }
     },
-    "commands": [{
+    "commands": [
+      {
         "command": "autoBarrel.createBarrel",
         "title": "Create Barrel"
       },
@@ -87,14 +88,16 @@
       }
     ],
     "menus": {
-      "commandPalette": [{
+      "commandPalette": [
+        {
           "command": "autoBarrel.start"
         },
         {
           "command": "autoBarrel.stop"
         }
       ],
-      "explorer/context": [{
+      "explorer/context": [
+        {
           "command": "autoBarrel.createBarrel",
           "when": "explorerViewletFocus && explorerResourceIsFolder"
         },
