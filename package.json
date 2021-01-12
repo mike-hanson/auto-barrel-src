@@ -118,21 +118,21 @@
     "test": "npm run compile && node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "@testpossessed/ts-substitute": "^1.0.0",
-    "@types/chai": "^4.2.1",
-    "@types/glob": "^7.1.1",
-    "@types/mocha": "^2.2.48",
-    "@types/node": "^8.10.53",
+    "@testpossessed/ts-substitute": "^1.1.1",
+    "@types/chai": "^4.2.14",
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.2.0",
+    "@types/node": "^14.14.20",
     "chai": "^4.2.0",
-    "ts-loader": "^6.0.4",
-    "ts-node": "^8.3.0",
-    "tslint": "^5.19.0",
-    "typescript": "^3.6.2",
-    "vscode": "^1.1.36",
-    "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.8"
+    "ts-loader": "^8.0.14",
+    "ts-node": "^9.1.1",
+    "tslint": "^6.1.3",
+    "typescript": "^4.1.3",
+    "vscode": "^1.1.37",
+    "webpack": "^5.13.0",
+    "webpack-cli": "^4.3.1"
   },
   "dependencies": {
-    "awilix": "^4.2.2"
+    "awilix": "^4.3.1"
   }
 }
