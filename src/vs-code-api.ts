@@ -100,7 +100,8 @@ export class VsCodeApi implements IVsCodeApi {
       watchGlob: getSettingOrDefault<string>(config, 'watchGlob'),
       ignoreFilePathContainingAnyOf: getSettingOrDefault<string>(config, 'ignoreFilePathContainingAnyOf'),
       useImportAliasExportPattern: getSettingOrDefault<boolean>(config, 'useImportAliasExportPattern'),
-      disableRecursiveBarrelling: getSettingOrDefault<boolean>(config, 'disableRecursiveBarrelling')
+      disableRecursiveBarrelling: getSettingOrDefault<boolean>(config, 'disableRecursiveBarrelling'),
+      excludeSemiColonAtEndOfLine: getSettingOrDefault<boolean>(config, 'excludeSemiColonAtEndOfLine')
     };
 
     function getSettingOrDefault<T extends string | boolean>(
