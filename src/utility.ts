@@ -1,15 +1,12 @@
 import * as path from 'path';
 
 import { IUtility } from './abstractions/utlity.interface';
-import { IConfiguration } from './abstractions/configuration.interface';
 import { IVsCodeApi } from './abstractions/vs-code-api.interface';
 import { supportedExtensions } from './supported-extensions';
 
 export class Utility implements IUtility {
 
-    constructor(private configuration: IConfiguration,
-        private vsCodeApi: IVsCodeApi) {
-    }
+    constructor(private vsCodeApi: IVsCodeApi) {}
 
     public buildAlias(filePath: string): string {
         const baseName = path.basename(filePath, path.extname(filePath));
@@ -39,7 +36,7 @@ export class Utility implements IUtility {
     }
 
     public async findClosestBarrel(filePath: string): Promise<string> {
-        const config = this.configuration.current;
+        const config = this.vsCodeApi.getConfiguration();
         let fileExtension = path.extname(filePath);
         if(fileExtension.toLowerCase() === '.vue') {
             // need to switch extension, possibly twice to search for barrel file
@@ -90,7 +87,7 @@ export class Utility implements IUtility {
     }
 
     public getLanguageExtension(filePaths: Array<string>): 'ts' | 'js' {
-        const currentConfig = this.configuration.current;
+        const currentConfig = this.vsCodeApi.getConfiguration();
         if (currentConfig.alwaysUseDefaultLanguage === false) {
             const filePathsExcludingVue = filePaths.filter(p => path.extname(p) !== '.vue');
             if (filePathsExcludingVue.every(f => f.endsWith('.ts') || f.endsWith('.tsx'))) {
@@ -108,7 +105,7 @@ export class Utility implements IUtility {
     }
 
     public pathContainsIgnoredFragment(filePath: string): boolean {
-        const ignoredFragmentsSetting = this.configuration.current.ignoreFilePathContainingAnyOf;
+        const ignoredFragmentsSetting = this.vsCodeApi.getConfiguration().ignoreFilePathContainingAnyOf;
         if (ignoredFragmentsSetting) {
             const fragments = ignoredFragmentsSetting.split(',');
             if (fragments && fragments.length) {

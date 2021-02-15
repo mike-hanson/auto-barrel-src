@@ -7,5 +7,6 @@ export const defaultSettings: AutoBarrelSettings = {
     ignoreFilePathContainingAnyOf: '.spec,.test',
     useImportAliasExportPattern: false,
     disableRecursiveBarrelling: false,
-    excludeSemiColonAtEndOfLine: false
+    excludeSemiColonAtEndOfLine: false,
+    includeExtensionOnExport: '.vue',
 };

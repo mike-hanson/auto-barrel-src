@@ -2,7 +2,6 @@ import { assert } from 'chai';
 import { Substitute, Arg, SubstituteOf } from '@testpossessed/ts-substitute';
 
 import { IVsCodeApi } from '../../abstractions/vs-code-api.interface';
-import { IConfiguration } from '../../abstractions/configuration.interface';
 import { defaultSettings } from '../../default-settings';
 import { IDisposable } from '../../abstractions/disposable.interface';
 import { IUtility } from '../../abstractions/utlity.interface';
@@ -13,7 +12,6 @@ import { AutoBarreller } from '../../auto-barreller';
 describe('AutoBarreller', () => {
   const defaultBarrelFolder = '/c:/src/barrel';
   const defaultBarrelFilePath = `${defaultBarrelFolder}/index.ts`;
-  let configuration: SubstituteOf<IConfiguration>;
   let vsCodeApi: SubstituteOf<IVsCodeApi>;
   let utility: SubstituteOf<IUtility>;
   let exportStatementBuilder: SubstituteOf<IExportStatementBuilder>;
@@ -26,12 +24,11 @@ describe('AutoBarreller', () => {
   };
 
   beforeEach(() => {
-    configuration = Substitute.for<IConfiguration>();
     vsCodeApi = Substitute.for<IVsCodeApi>();
     utility = Substitute.for<IUtility>();
     exportStatementBuilder = Substitute.for<IExportStatementBuilder>();
     assumeVsCodeApiReturnsPromises();
-    target = new AutoBarreller(configuration, vsCodeApi, utility, exportStatementBuilder);
+    target = new AutoBarreller(vsCodeApi, utility, exportStatementBuilder);
   });
 
   it('should define a method to start watching for changes', () => {
@@ -219,7 +216,7 @@ describe('AutoBarreller', () => {
   });
 
   function assumeDefaultConfiguration() {
-    configuration.current.returns(defaultSettings);
+    vsCodeApi.getConfiguration().returns(defaultSettings);
   }
 
   function assumeVsCodeApiReturnsPromises() {

@@ -1,10 +1,15 @@
 # Change Log
 
-All notable changes to the "aut0-barrel" extension will be documented in this file.
+All notable changes to the "auto-barrel" extension will be documented in this file.
 
 Based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
+
+## [1.9.0] 2021-02-15
+
+### Added
+Support for list of extensions to include in generated export statements
 
 ## [1.8.0] 2021-01-11
 

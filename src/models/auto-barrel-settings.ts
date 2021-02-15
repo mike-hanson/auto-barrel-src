@@ -7,4 +7,5 @@ export interface AutoBarrelSettings {
     useImportAliasExportPattern: boolean;
     disableRecursiveBarrelling: boolean;
     excludeSemiColonAtEndOfLine: boolean;
+    includeExtensionOnExport: string;
 }

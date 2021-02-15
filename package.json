@@ -2,7 +2,7 @@
   "name": "auto-barrel",
   "displayName": "Auto Barrel",
   "description": "Provides commands to create or update a TypeScript or JavaScript barrel file in a folder and to automatically manage the contents of the barrel",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "publisher": "mikehanson",
   "repository": "https://github.com/testpossessed/auto-barrel",
   "icon": "images/icon.png",
@@ -66,6 +66,11 @@
           "type": "boolean",
           "default": false,
           "description": "Indicates whether semi colons should NOT be added to end of generated lines"
+        },
+        "autoBarrel.includeExtensionOnExport": {
+          "type": "string",
+          "default": ".vue",
+          "description": "Comma separated string of extensions that should be included with generated exports"
         }
       }
     },
@@ -133,6 +138,10 @@
     "webpack-cli": "^4.3.1"
   },
   "dependencies": {
-    "awilix": "^4.3.1"
+    "-": "^0.0.1",
+    "@angular-devkit/schematics-cli": "^0.1102.0",
+    "@angular/cli": "^11.2.0",
+    "awilix": "^4.3.1",
+    "g": "^2.0.1"
   }
 }

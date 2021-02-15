@@ -2,14 +2,14 @@ import * as path from 'path';
 
 import { StatementDetails } from './models/statement-details';
 import { IUtility } from './abstractions/utlity.interface';
-import { IConfiguration } from './abstractions/configuration.interface';
 import { IExportStatementBuilder } from './abstractions/export-statement-builder.interface';
+import { IVsCodeApi } from './abstractions/vs-code-api.interface';
 
 export class ExportStatementBuilder implements IExportStatementBuilder {
-  constructor(private utility: IUtility, private configuration: IConfiguration) {}
+  constructor(private utility: IUtility, private vsCodeApi: IVsCodeApi) {}
 
   public async build(rootFolderPath: string, filePath: string): Promise<StatementDetails> {
-    const config = this.configuration.current;
+    const config = this.vsCodeApi.getConfiguration();
     const result: StatementDetails = {
       statement: undefined,
       alias: undefined,
@@ -20,8 +20,11 @@ export class ExportStatementBuilder implements IExportStatementBuilder {
     let baseName = path.basename(filePath, fileExtension);
     let importRelativePath = path
       .relative(rootFolderPath, filePath)
-      .replace(/\\/g, '/')
-      .replace(fileExtension, '');
+      .replace(/\\/g, '/');
+
+    if(config.includeExtensionOnExport.indexOf(fileExtension) === -1) {
+      importRelativePath = importRelativePath.replace(fileExtension, '');
+    }
 
     if (baseName.toLowerCase() === 'index') {
       importRelativePath = importRelativePath.replace('/index', '');

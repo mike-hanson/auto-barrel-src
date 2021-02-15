@@ -101,7 +101,8 @@ export class VsCodeApi implements IVsCodeApi {
       ignoreFilePathContainingAnyOf: getSettingOrDefault<string>(config, 'ignoreFilePathContainingAnyOf'),
       useImportAliasExportPattern: getSettingOrDefault<boolean>(config, 'useImportAliasExportPattern'),
       disableRecursiveBarrelling: getSettingOrDefault<boolean>(config, 'disableRecursiveBarrelling'),
-      excludeSemiColonAtEndOfLine: getSettingOrDefault<boolean>(config, 'excludeSemiColonAtEndOfLine')
+      excludeSemiColonAtEndOfLine: getSettingOrDefault<boolean>(config, 'excludeSemiColonAtEndOfLine'),
+      includeExtensionOnExport: getSettingOrDefault<string>(config, 'includeExtensionOnExport')
     };
 
     function getSettingOrDefault<T extends string | boolean>(

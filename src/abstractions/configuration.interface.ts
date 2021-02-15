@@ -9,4 +9,5 @@ export interface IConfiguration {
     readonly useImportAliasExportPattern: boolean;
     readonly disableRecursiveBarrelling: boolean;
     readonly excludeSemiColonAtEndOfLine: boolean;
+    readonly includeExtensionOnExport: string;
 }

@@ -2,7 +2,6 @@ import { assert } from 'chai';
 import { Substitute, Arg, SubstituteOf } from '@testpossessed/ts-substitute';
 
 import { defaultSettings } from '../../default-settings';
-import { IConfiguration } from '../../abstractions/configuration.interface';
 import { IVsCodeApi } from '../../abstractions/vs-code-api.interface';
 import { Utility } from '../../utility';
 import { BarrelDetails } from '../../models/barrel-details';
@@ -10,17 +9,15 @@ import { ExportStatementBuilder } from '../../export-statement-builder';
 import { BarrelBuilder } from '../../barrel-builder';
 
 describe('BarrelBuilder', () => {
-  let configuration: SubstituteOf<IConfiguration>;
   let vsCodeApi: SubstituteOf<IVsCodeApi>;
   let utility: Utility;
   let exportStatementBuilder: ExportStatementBuilder;
   let target: BarrelBuilder;
 
   beforeEach(() => {
-    configuration = Substitute.for<IConfiguration>();
     vsCodeApi = Substitute.for<IVsCodeApi>();
-    utility = new Utility(configuration, vsCodeApi);
-    exportStatementBuilder = new ExportStatementBuilder(utility, configuration);
+    utility = new Utility(vsCodeApi);
+    exportStatementBuilder = new ExportStatementBuilder(utility, vsCodeApi);
     target = new BarrelBuilder(utility, exportStatementBuilder);
   });
 
@@ -184,14 +181,14 @@ describe('BarrelBuilder', () => {
   });
 
   function assumeDefaultConfiguration() {
-    configuration.current.returns(defaultSettings);
+    vsCodeApi.getConfiguration().returns(defaultSettings);
   }
 
   function assumeConfigReturnsValue<T extends string | boolean>(section: string, value: T) {
     const baseSettings = Object.assign({}, defaultSettings);
     baseSettings[section] = value;
 
-    configuration.current.returns(baseSettings);
+    vsCodeApi.getConfiguration().returns(baseSettings);
   }
 
   function assumeNoExportDefault() {

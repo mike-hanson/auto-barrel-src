@@ -107,7 +107,8 @@ describe('Configuration', () => {
       ignoreFilePathContainingAnyOf: 'ignore',
       useImportAliasExportPattern: true,
       disableRecursiveBarrelling: true,
-      excludeSemiColonAtEndOfLine: false
+      excludeSemiColonAtEndOfLine: false,
+      includeExtensionOnExport: '.vue'
     };
     vsCodeApiMock.getConfiguration().returns(expected);
 

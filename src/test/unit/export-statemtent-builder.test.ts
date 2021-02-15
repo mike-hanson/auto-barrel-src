@@ -2,20 +2,20 @@ import { assert } from 'chai';
 import { Substitute, Arg, SubstituteOf } from '@testpossessed/ts-substitute';
 
 import { IUtility } from '../../abstractions/utlity.interface';
-import { IConfiguration } from '../../abstractions/configuration.interface';
 import { defaultSettings } from '../../default-settings';
 import { StatementDetails } from '../../models/statement-details';
 import { ExportStatementBuilder } from '../../export-statement-builder';
+import { IVsCodeApi } from '../../abstractions/vs-code-api.interface';
 
 describe('ExportStatementBuilder', () => {
-  let configuration: SubstituteOf<IConfiguration>;
   let utility: SubstituteOf<IUtility>;
+  let vsCodeApi: SubstituteOf<IVsCodeApi>;
   let target: ExportStatementBuilder;
 
   beforeEach(() => {
     utility = Substitute.for<IUtility>();
-    configuration = Substitute.for<IConfiguration>();
-    target = new ExportStatementBuilder(utility, configuration);
+    vsCodeApi = Substitute.for<IVsCodeApi>();
+    target = new ExportStatementBuilder(utility, vsCodeApi);
   });
 
   it('should be defined', () => {
@@ -34,7 +34,7 @@ describe('ExportStatementBuilder', () => {
       // tslint:disable-next-line: quotemark
       statement: "export * from './test1';",
       alias: undefined,
-      isBarrelImport: false
+      isBarrelImport: false,
     };
 
     const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/test1.ts');
@@ -49,7 +49,7 @@ describe('ExportStatementBuilder', () => {
       // tslint:disable-next-line: quotemark
       statement: "export * from './sub';",
       alias: undefined,
-      isBarrelImport: true
+      isBarrelImport: true,
     };
 
     const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/sub/index.ts');
@@ -67,7 +67,7 @@ describe('ExportStatementBuilder', () => {
     const expected: StatementDetails = {
       statement: `export { default as test1 } from \'./test1\';`,
       alias: undefined,
-      isBarrelImport: false
+      isBarrelImport: false,
     };
 
     const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/test1.ts');
@@ -83,7 +83,7 @@ describe('ExportStatementBuilder', () => {
     const expected: StatementDetails = {
       statement: `export { default as sub } from \'./sub\';`,
       alias: undefined,
-      isBarrelImport: true
+      isBarrelImport: true,
     };
 
     const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/sub/index.ts');
@@ -92,9 +92,10 @@ describe('ExportStatementBuilder', () => {
   });
 
   it('should build correct statement when import alias export pattern enabled', async () => {
-    const config = Object.assign({}, defaultSettings);
-    config.useImportAliasExportPattern = true;
-    configuration.current.returns(config);
+    vsCodeApi.getConfiguration().returns({
+      ...defaultSettings,
+      useImportAliasExportPattern: true,
+    });
 
     const alias = 'Test1';
     utility.buildAlias(Arg.any()).returns(alias);
@@ -102,7 +103,7 @@ describe('ExportStatementBuilder', () => {
     const expected: StatementDetails = {
       statement: `import * as ${alias} from \'./test1\';`,
       alias,
-      isBarrelImport: false
+      isBarrelImport: false,
     };
 
     const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/test1.ts');
@@ -111,9 +112,10 @@ describe('ExportStatementBuilder', () => {
   });
 
   it('should build correct statement for nested barrel file when import alias export pattern enabled', async () => {
-    const config = Object.assign({}, defaultSettings);
-    config.useImportAliasExportPattern = true;
-    configuration.current.returns(config);
+    vsCodeApi.getConfiguration().returns({
+      ...defaultSettings,
+      useImportAliasExportPattern: true,
+    });
 
     const alias = 'Sub';
     utility.buildAlias(Arg.any()).returns(alias);
@@ -121,7 +123,7 @@ describe('ExportStatementBuilder', () => {
     const expected: StatementDetails = {
       statement: `import * as ${alias} from \'./sub\';`,
       alias,
-      isBarrelImport: true
+      isBarrelImport: true,
     };
 
     const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/sub/index.ts');
@@ -129,42 +131,41 @@ describe('ExportStatementBuilder', () => {
     assert.deepEqual(actual, expected);
   });
 
-  it('should build correct statement for vue file when no default and not using import alias pattern', async () => {
+  it('should build correct statement for vue file when include extension on export contains .vue', async () => {
     assumeDefaultConfiguration();
     utility.containsDefaultExport(Arg.any()).returnsAsync(false);
     const expected: StatementDetails = {
       // tslint:disable-next-line: quotemark
-      statement: "export * from './test1';",
+      statement: "export * from './test1.vue';",
       alias: undefined,
-      isBarrelImport: false
+      isBarrelImport: false,
     };
 
     const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/test1.vue');
 
     assert.deepEqual(actual, expected);
   });
+  
   it('should build correct statement when exclude semi colon at end of line setting enabled', async () => {
-   
-    configuration.current.returns({
+    vsCodeApi.getConfiguration().returns({
       ...defaultSettings,
-      excludeSemiColonAtEndOfLine: true
+      excludeSemiColonAtEndOfLine: true,
     });
-    
+
     utility.containsDefaultExport(Arg.any()).returnsAsync(false);
     const expected: StatementDetails = {
       // tslint:disable-next-line: quotemark
       statement: "export * from './test1'",
       alias: undefined,
-      isBarrelImport: false
+      isBarrelImport: false,
     };
 
-    const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/test1.vue');
+    const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/test1.ts');
 
     assert.deepEqual(actual, expected);
   });
 
   function assumeDefaultConfiguration() {
-    configuration.current.returns(defaultSettings);
+    vsCodeApi.getConfiguration().returns(defaultSettings);
   }
-
 });

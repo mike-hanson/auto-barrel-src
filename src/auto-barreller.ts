@@ -1,7 +1,6 @@
 import * as path from 'path';
 
 import { IVsCodeApi } from './abstractions/vs-code-api.interface';
-import { IConfiguration } from './abstractions/configuration.interface';
 import { IDisposable } from './abstractions/disposable.interface';
 import { IUtility } from './abstractions/utlity.interface';
 import { IExportStatementBuilder } from './abstractions/export-statement-builder.interface';
@@ -10,7 +9,6 @@ export class AutoBarreller implements IDisposable {
   private fileSystemWatcher: IDisposable;
 
   constructor(
-    private configuration: IConfiguration,
     private vsCodeApi: IVsCodeApi,
     private utility: IUtility,
     private exportStatementBuilder: IExportStatementBuilder
@@ -23,7 +21,7 @@ export class AutoBarreller implements IDisposable {
     }
 
     try {
-      const configuration = this.configuration.current;
+      const configuration = this.vsCodeApi.getConfiguration();
       this.fileSystemWatcher = this.vsCodeApi.createFileSystemWatcher(
         configuration.watchGlob,
         this.handleFileCreated,
@@ -35,7 +33,7 @@ export class AutoBarreller implements IDisposable {
       console.log(err);
       await this.vsCodeApi.showErrorMessage('Auto Barrel start failed, please check the console for more information.');
     }
-  };
+  }
 
   public stop = async (): Promise<void> => {
     if (this.isRunning() === false) {
@@ -45,12 +43,12 @@ export class AutoBarreller implements IDisposable {
 
     this.dispose();
     return Promise.resolve();
-  };
+  }
 
   public dispose = () => {
     this.fileSystemWatcher.dispose();
     this.fileSystemWatcher = undefined;
-  };
+  }
 
   public handleFileCreated = async (filePath: string): Promise<void> => {
     try {
@@ -75,7 +73,7 @@ export class AutoBarreller implements IDisposable {
       console.log(error);
       return Promise.reject();
     }
-  };
+  }
 
   public handleFileDeleted = async (filePath: string): Promise<void> => {
     try {
@@ -96,7 +94,7 @@ export class AutoBarreller implements IDisposable {
       console.log(error);
       return Promise.reject();
     }
-  };
+  }
 
   private isRunning(): boolean {
     return typeof this.fileSystemWatcher !== 'undefined';

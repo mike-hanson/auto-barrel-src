@@ -6,6 +6,10 @@ export class Configuration implements IConfiguration {
     constructor(private vsCodeApi: IVsCodeApi) {
     }
 
+    public get alwaysUseDefaultLanguage(): boolean {
+        return this.current.alwaysUseDefaultLanguage;
+    }
+
     public get current(): AutoBarrelSettings {
         return this.vsCodeApi.getConfiguration();
     }
@@ -14,27 +18,27 @@ export class Configuration implements IConfiguration {
         return this.current.defaultExtension;
     }
 
-    public get alwaysUseDefaultLanguage(): boolean {
-        return this.current.alwaysUseDefaultLanguage;
-    }
-
-    public get watchGlob(): string {
-        return this.current.watchGlob;
-    }
-
-    public get ignoreFilePathContainingAnyOf(): string {
-        return this.current.ignoreFilePathContainingAnyOf;
-    }
-
-    public get useImportAliasExportPattern(): boolean {
-        return this.current.useImportAliasExportPattern;
-    }
-
     public get disableRecursiveBarrelling(): boolean {
         return this.current.disableRecursiveBarrelling;
     }
 
     public get excludeSemiColonAtEndOfLine(): boolean {
         return this.current.excludeSemiColonAtEndOfLine;
+    }
+
+    public get ignoreFilePathContainingAnyOf(): string {
+        return this.current.ignoreFilePathContainingAnyOf;
+    }
+
+    public get includeExtensionOnExport(): string {
+        return this.current.includeExtensionOnExport;
+    }
+
+    public get useImportAliasExportPattern(): boolean {
+        return this.current.useImportAliasExportPattern;
+    }
+
+    public get watchGlob(): string {
+        return this.current.watchGlob;
     }
 }

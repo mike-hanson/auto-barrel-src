@@ -1,20 +1,17 @@
 import { assert } from 'chai';
 import { Substitute, Arg, SubstituteOf } from '@testpossessed/ts-substitute';
 
-import { IConfiguration } from '../../abstractions/configuration.interface';
 import { Utility } from '../../utility';
 import { defaultSettings } from '../../default-settings';
 import { IVsCodeApi } from '../../abstractions/vs-code-api.interface';
 
 describe('Utility', () => {
-  let configuration: SubstituteOf<IConfiguration>;
   let vsCodeApi: SubstituteOf<IVsCodeApi>;
   let target: Utility;
 
   beforeEach(() => {
     vsCodeApi = Substitute.for<IVsCodeApi>();
-    configuration = Substitute.for<IConfiguration>();
-    target = new Utility(configuration, vsCodeApi);
+    target = new Utility(vsCodeApi);
   });
 
   it('should be defined', () => {
@@ -102,7 +99,7 @@ describe('Utility', () => {
         '/c:/src/barrel/sub/index.ts',
         ,
         '/c:/src/barrel/sub/nested/index.ts',
-        '/c:/src/barrel/sub/sub/index.ts'
+        '/c:/src/barrel/sub/sub/index.ts',
       ];
 
       vsCodeApi.findFiles(Arg.any('String')).returnsAsync(matchedFiles);
@@ -121,7 +118,7 @@ describe('Utility', () => {
         '/c:/src/barrel/index.ts',
         ,
         '/c:/src/barrel/sub/nested/index.ts',
-        '/c:/src/barrel/sub/index.ts'
+        '/c:/src/barrel/sub/index.ts',
       ];
 
       vsCodeApi.findFiles(Arg.any('String')).returnsAsync(matchedFiles);
@@ -136,7 +133,10 @@ describe('Utility', () => {
     it('should match barrel in grand parent folder', async () => {
       assumeDefaultConfiguration();
 
-      const matchedFiles: Array<string> = ['/c:/src/barrel/index.ts', '/c:/src/barrel/sub/nested/index.ts'];
+      const matchedFiles: Array<string> = [
+        '/c:/src/barrel/index.ts',
+        '/c:/src/barrel/sub/nested/index.ts',
+      ];
 
       vsCodeApi.findFiles(Arg.any('String')).returnsAsync(matchedFiles);
 
@@ -150,7 +150,7 @@ describe('Utility', () => {
     it('should match barrel in same folder when recursive barrelling disaabled', async () => {
       const config = Object.assign({}, defaultSettings);
       config.disableRecursiveBarrelling = true;
-      configuration.current.returns(config);
+      vsCodeApi.getConfiguration().returns(config);
 
       const matchedFiles: Array<string> = ['/c:/src/barrel/sub/sub/index.ts'];
 
@@ -166,7 +166,7 @@ describe('Utility', () => {
     it('should return nothing when recursive barrelling disaabled and no barrel file in same folder', async () => {
       const config = Object.assign({}, defaultSettings);
       config.disableRecursiveBarrelling = true;
-      configuration.current.returns(config);
+      vsCodeApi.getConfiguration().returns(config);
 
       const matchedFiles: Array<string> = [];
 
@@ -182,7 +182,11 @@ describe('Utility', () => {
     it('should return correct extension when all files have .ts extension', () => {
       assumeDefaultConfiguration();
 
-      const filePaths: Array<string> = ['C:\\barrel\\test1.ts', 'C:\\barrel\\test2.ts', 'C:\\barrel\\test3.ts'];
+      const filePaths: Array<string> = [
+        'C:\\barrel\\test1.ts',
+        'C:\\barrel\\test2.ts',
+        'C:\\barrel\\test3.ts',
+      ];
 
       assert.equal(target.getLanguageExtension(filePaths), 'ts');
     });
@@ -190,7 +194,11 @@ describe('Utility', () => {
     it('should return correct extension when all files have .js extension', () => {
       assumeDefaultConfiguration();
 
-      const filePaths: Array<string> = ['C:\\barrel\\test1.js', 'C:\\barrel\\test2.js', 'C:\\barrel\\test3.js'];
+      const filePaths: Array<string> = [
+        'C:\\barrel\\test1.js',
+        'C:\\barrel\\test2.js',
+        'C:\\barrel\\test3.js',
+      ];
 
       assert.equal(target.getLanguageExtension(filePaths), 'js');
     });
@@ -198,9 +206,13 @@ describe('Utility', () => {
     it('should return default extension if configured to always use default', () => {
       const config = Object.assign({}, defaultSettings);
       config.alwaysUseDefaultLanguage = true;
-      configuration.current.returns(config);
+      vsCodeApi.getConfiguration().returns(config);
 
-      const filePaths: Array<string> = ['C:\\barrel\\test1.ts', 'C:\\barrel\\test2.ts', 'C:\\barrel\\test3.ts'];
+      const filePaths: Array<string> = [
+        'C:\\barrel\\test1.ts',
+        'C:\\barrel\\test2.ts',
+        'C:\\barrel\\test3.ts',
+      ];
 
       assert.equal(target.getLanguageExtension(filePaths), config.defaultExtension);
     });
@@ -208,7 +220,11 @@ describe('Utility', () => {
     it('should return default extension if file extensions are mixed', () => {
       assumeDefaultConfiguration();
 
-      const filePaths: Array<string> = ['C:\\barrel\\test1.ts', 'C:\\barrel\\test2.js', 'C:\\barrel\\test3.ts'];
+      const filePaths: Array<string> = [
+        'C:\\barrel\\test1.ts',
+        'C:\\barrel\\test2.js',
+        'C:\\barrel\\test3.ts',
+      ];
       assert.equal(target.getLanguageExtension(filePaths), defaultSettings.defaultExtension);
     });
   });
@@ -233,7 +249,7 @@ describe('Utility', () => {
     it('should return default extension if configured to always use default', () => {
       const config = Object.assign({}, defaultSettings);
       config.alwaysUseDefaultLanguage = true;
-      configuration.current.returns(config);
+      vsCodeApi.getConfiguration().returns(config);
 
       const filePath = 'C:\\barrel\\test1.ts';
 
@@ -292,6 +308,6 @@ describe('Utility', () => {
   });
 
   function assumeDefaultConfiguration() {
-    configuration.current.returns(defaultSettings);
+    vsCodeApi.getConfiguration().returns(defaultSettings);
   }
 });
