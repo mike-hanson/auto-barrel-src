@@ -6,6 +6,11 @@ Based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.9.1] 2021-03-17
+
+### Added
+Create Barrel and Update Barrel commands now sort file list before writing to barrel file (PR from Ben Winding)
+
 ## [1.9.0] 2021-02-15
 
 ### Added

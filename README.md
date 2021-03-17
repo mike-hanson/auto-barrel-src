@@ -2,6 +2,8 @@
 
 Auto Barrel adds support for creating a barrel (index.[tj]s) in a folder and optionally keeping it up to date automatically.
 
+Please note the *raison d'etre' for this extension is the **Automated** maintenance of barrel files.  While it provides two commands for creating and updating barrel files it was not intended for manual barrel management.  There are several other extensions that may provide better support for manual barrel management. 
+
 ![install and work](images/auto-barrel.gif)
 
 ## Features
