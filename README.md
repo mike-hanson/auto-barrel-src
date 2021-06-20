@@ -100,6 +100,14 @@ This defaults to '.vue';
 
 This should be a comma separated string of extensions (including the dot) that should be included on generating an export statement. When a file is processed if the extension is included in this list then the extension will be included in the file path of the export statement.
 
+```javascript
+'autoBarrel.quoteStyle';
+```
+
+This defaults to 'Single'.
+
+If this is set to 'Double' then a double quoute will be used in generated code when building the import path for statements.
+
 ## Ignoring Potential Barrel Files
 
 If your workspace/s contain existing index.ts or index.js files that are matched by the autoBarrel.watchGlob pattern, but they are not barrel files you can tell Auto Barrel to ignore them during automatic monitoring by adding the following comment as the first line of the file.

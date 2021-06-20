@@ -8,4 +8,5 @@ export interface AutoBarrelSettings {
     disableRecursiveBarrelling: boolean;
     excludeSemiColonAtEndOfLine: boolean;
     includeExtensionOnExport: string;
+    quoteStyle: 'Single' | 'Double';
 }

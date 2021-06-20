@@ -20,7 +20,7 @@ export class ExportStatementBuilder implements IExportStatementBuilder {
     let baseName = path.basename(filePath, fileExtension);
     let importRelativePath = path
       .relative(rootFolderPath, filePath)
-      .replace(/\\/g, '/');
+      .replace(/\\/g, '/');    
 
     if(config.includeExtensionOnExport.indexOf(fileExtension) === -1) {
       importRelativePath = importRelativePath.replace(fileExtension, '');
@@ -31,17 +31,19 @@ export class ExportStatementBuilder implements IExportStatementBuilder {
       baseName = importRelativePath.substr(baseName.lastIndexOf('/') + 1);
       result.isBarrelImport = true;
     }
+    
     const lineEnd = config.excludeSemiColonAtEndOfLine? '': ';';
+    const quoteCharacter: string = config.quoteStyle === 'Double' ? '"': '\''; 
 
     if (config.useImportAliasExportPattern) {
       result.alias = this.utility.buildAlias(filePath);
-      result.statement = `import * as ${result.alias} from './${importRelativePath}'${lineEnd}`;
+      result.statement = `import * as ${result.alias} from ${quoteCharacter}./${importRelativePath}${quoteCharacter}${lineEnd}`;
     } else {
       const containsDefaultExport = await this.utility.containsDefaultExport(filePath);
       if (containsDefaultExport === true) {
-        result.statement = `export { default as ${baseName} } from './${importRelativePath}'${lineEnd}`;
+        result.statement = `export { default as ${baseName} } from ${quoteCharacter}./${importRelativePath}${quoteCharacter}${lineEnd}`;
       } else {
-        result.statement = `export * from './${importRelativePath}'${lineEnd}`;
+        result.statement = `export * from ${quoteCharacter}./${importRelativePath}${quoteCharacter}${lineEnd}`;
       }
     }
 

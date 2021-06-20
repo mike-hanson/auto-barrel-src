@@ -6,6 +6,11 @@ Based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.10.0] 2021-06-20
+
+### Added
+New setting to control whether double or single quotes should be used when generating code
+
 ## [1.9.1] 2021-03-17
 
 ### Added

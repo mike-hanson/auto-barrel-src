@@ -71,6 +71,13 @@
           "type": "string",
           "default": ".vue",
           "description": "Comma separated string of extensions that should be included with generated exports"
+        },
+        "autoBarrel.quoteStyle": {
+          "type": "string",
+          "default": "Single",
+          "description": "The type of quote to use when generating export statements",
+          "enum": ["Single", "Double"],
+          "enumDescriptions": ["Use single (') quotes", "Use doulbe (\") quotes"]
         }
       }
     },

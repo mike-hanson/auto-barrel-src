@@ -9,4 +9,5 @@ export const defaultSettings: AutoBarrelSettings = {
     disableRecursiveBarrelling: false,
     excludeSemiColonAtEndOfLine: false,
     includeExtensionOnExport: '.vue',
+    quoteStyle: 'Single'
 };

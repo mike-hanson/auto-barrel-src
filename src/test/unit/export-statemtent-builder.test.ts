@@ -165,6 +165,27 @@ describe('ExportStatementBuilder', () => {
     assert.deepEqual(actual, expected);
   });
 
+  it('should correct quote character when double selected for quote style', async () => {
+    vsCodeApi.getConfiguration().returns({
+      ...defaultSettings,
+      quoteStyle: 'Double',
+    });
+
+    utility.containsDefaultExport(Arg.any()).returnsAsync(false);
+
+    const expected: StatementDetails = {
+      statement: 'export * from "./test1";',
+      alias: undefined,
+      isBarrelImport: false
+    };
+
+    const actual = await target.build('/c:/src/barrel', '/c:/src/barrel/test1.ts');
+
+    console.log(actual);
+
+    assert.deepEqual(actual, expected);
+  });
+
   function assumeDefaultConfiguration() {
     vsCodeApi.getConfiguration().returns(defaultSettings);
   }

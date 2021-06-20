@@ -34,6 +34,10 @@ export class Configuration implements IConfiguration {
         return this.current.includeExtensionOnExport;
     }
 
+    public get quoteStyle(): 'Single' | 'Double' {
+        return this.current.quoteStyle;
+    }
+
     public get useImportAliasExportPattern(): boolean {
         return this.current.useImportAliasExportPattern;
     }

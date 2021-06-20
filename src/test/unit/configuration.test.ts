@@ -108,7 +108,8 @@ describe('Configuration', () => {
       useImportAliasExportPattern: true,
       disableRecursiveBarrelling: true,
       excludeSemiColonAtEndOfLine: false,
-      includeExtensionOnExport: '.vue'
+      includeExtensionOnExport: '.vue',
+      quoteStyle: 'Single'
     };
     vsCodeApiMock.getConfiguration().returns(expected);
 
